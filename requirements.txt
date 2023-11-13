@@ -1,11 +1,6 @@
-altair
 pandas
 streamlit
 matplotlib
 xlsxwriter
 Openpyxl 
-pip
-pillow
-streamlit-aggrid
-pypdf2
 sympy
