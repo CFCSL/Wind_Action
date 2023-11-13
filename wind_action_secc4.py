@@ -112,35 +112,65 @@ def sigma_v_func(k_r=k_r, v_b=v_b, k_I=k_I):
 	
 c_r=symbols('c_r',cls=Function)(z)
 
-def c_r_func(z=z, z_min=z_min, z_max=z_max, z_0=z_0, k_r=k_r):
-	z=UnevaluatedExpr(z)
-	z_min=UnevaluatedExpr(z_min)
-	z_max=UnevaluatedExpr(z_max)
-	z_0=UnevaluatedExpr(z_0)
-	k_r=UnevaluatedExpr(k_r)
+def c_r_func(z=z, z_min=z_min, z_max=z_max, z_0=z_0, k_r=k_r, UE=False):
+	if UE:
+		z=UnevaluatedExpr(z)
+		z_min=UnevaluatedExpr(z_min)
+		z_max=UnevaluatedExpr(z_max)
+		z_0=UnevaluatedExpr(z_0)
+		k_r=UnevaluatedExpr(k_r)
 
-	condlist = [z >= z_min and z <= z_max, z <= z_min]
-	funclist = [Mul(k_r, log(z / z_0, evaluate=False),evaluate=False), Mul(k_r, log(z_min / z_0, evaluate=False),evaluate=False)]
-	exp = Piecewise(  funclist,condlist)
+	condlist = [And(z >= z_min,z <= z_max), z <= z_min]
+	funclist = [Mul(k_r, log(N(z / z_0,2), evaluate=False),evaluate=False), Mul(k_r, log(z_min / z_0, evaluate=False),evaluate=False)]
+	exp = Piecewise(*zip(funclist,condlist))
 	return Eq(c_r, exp, evaluate=False)
 
-def v_m(z):
-	exp = c_r(z) * c_0 * v_b
-	return exp
+v_m=symbols('v_m',cls=Function)(z)
+def v_m_func(z=z,c_r=c_r, c_0=c_0,v_b=v_b):
+	z=UnevaluatedExpr(z)
+	c_r=UnevaluatedExpr(c_r)
+	c_0=UnevaluatedExpr(c_0)
+	v_b=UnevaluatedExpr(v_b)
+	
+	exp = c_r * c_0 * v_b
+	return Eq(v_m, exp, evaluate=False)
 
-def I_v(z):
-	condlist = [z >= z_min and z <= z_max, z <= z_min]
-	funclist = [sigma_v / v_m(z), sigma_v / v_m(z_min)]
-	exp = np.piecewise(z, condlist, funclist)
-	return exp
+I_v=symbols('I_v',cls=Function)(z)
 
-def q_p(z):
-	exp = (1 + 7 * I_v(z)) * 0.5 * rho * v_m(z) ** 2  # Fixed operator and added 0.5
-	return exp
+def I_v_func(z=z,z_min=z_min, z_max=z_max, z_0=z_0, sigma_v=sigma_v, v_m=v_m, UE=False):
+#def I_v_func(z=z, z_min=z_min, z_max=z_max, z_0=z_0, UE=False):
+	if UE:
+		z=UnevaluatedExpr(z)
+		sigma_v=UnevaluatedExpr(sigma_v)
+		v_m=UnevaluatedExpr(v_m)
+		z_min=UnevaluatedExpr(z_min)
+		z_max=UnevaluatedExpr(z_max)
+		z_0=UnevaluatedExpr(z_0)
 
-def c_e(z):
-	exp = q_p(z) / q_b
-	return exp
+	condlist = [And(z >= z_min,z <= z_max), z <= z_min]
+
+	funclist = [sigma_v / v_m,  sigma_v / v_m.subs(z, z_min)]
+	#funclist = [k_I/(c_0*log(z/z_0)),k_I/(c_0*log(z_min/z_0)) ]
+	exp = Piecewise(*zip(funclist, condlist))
+	return Eq(I_v, exp, evaluate=False)
+
+
+q_p=symbols('q_p', cls=Function)(z)
+def q_p_func(z=z, I_v=I_v, rho=rho, v_m=v_m):
+	I_v=UnevaluatedExpr(I_v)
+	rho=UnevaluatedExpr(rho)
+	v_m=UnevaluatedExpr(v_m)
+
+	exp = (1 + 7 * I_v) * 0.5 * rho * v_m ** 2  # Fixed operator and added 0.5
+	return Eq(q_p, exp, evaluate=False)
+
+c_e=symbols('c_e', cls=Function)(z)
+def c_e_func(z=z,q_p=q_p, q_b=q_b):
+	q_p=UnevaluatedExpr(q_p)
+	q_b=UnevaluatedExpr(q_b)
+
+	exp = q_p / q_b
+	return Eq(c_e, exp,evaluate=False)
 
 
 
