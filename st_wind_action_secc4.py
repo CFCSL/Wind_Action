@@ -39,6 +39,11 @@ st.markdown('---')
 
 st.write('Basic velocity pressure given in Expression (4.10), $v_{b}$')
 
+st.markdown('**4.1 Basis for calculation**')
+
+st.markdown('**4.2 Basic values**')
+
+st.write('The basic wind velocity shall be calculated from Expression (4.1). ')
 v_b1 = v_b_func()
 st.latex(latex(v_b1))
 
@@ -50,6 +55,19 @@ st.latex(latex(v_b2))
 v_b = N(v_b2.doit(),3)
 
 st.latex(latex(v_b)+f"(m/s)")
+
+st.markdown(f"""
+where: 
+	
+$v_b$ is the basic wind velocity, defined as a function of wind direction and time of year at $10$ m 
+above ground of terrain category II 
+
+$v_{{b0}}$ is the fundamental value of the basic wind velocity, see (1)P 
+
+$c_{{dir}}$ is the directional factor, see Note 2. 
+
+$c_{{season}}$ is the season factor, see Note 3.
+""")
 
 st.markdown('---')
 
@@ -63,52 +81,64 @@ st.latex(latex(c_prob2))
 
 c_prob=N(c_prob2.doit(),3)
 st.latex(latex(c_prob))
+st.markdown(f"""
+where: 
+	
+$$K$$ is the shape parameter depending on the coefficient of variation of the extreme-value distribution. 
+$$n$$ is the exponent. 
+NOTE 5 The values for $K$ and $n$ may be given in the National Annex. The recommended values are $0,2$ 
+for $K$ and $0,5$ for $n$.
+""")
 
 st.markdown('---')
+st.markdown('**4.3 Mean wind** ')
+st.markdown('4.3.1 Variation with height')
 
-st.write('Terrain factor depending on the roughness length $z_0$')
+st.write('The mean wind velocity vm(z) at a height z above the terrain depends on the terrain roughness and orography and on the basic wind velocity, vb, and should be determined using Expression (4.3)')
 
-k_r1=k_r_func()
-st.latex(latex(k_r1))
+st.write("$v_m$")
+
 
 k_r2=k_r_func(z_0=z_0,z_0II=z_0II)
 
-st.latex(latex(k_r2))
+k_r=N(k_r2.doit(),3)
+
+c_r3=c_r_func(z=z, z_min=z_min, z_max=z_max, z_0=z_0, k_r=k_r.rhs,UE=False)
+
+
+c_r=N(c_r3.doit(),3)
+
+v_m1=v_m_func()
+st.latex(latex(v_m1))
+
+v_m2=v_m_func(z=z,c_r=c_r.rhs, c_0=c_0,v_b=v_b.rhs)
+
+st.latex(latex(v_m2))
+
+v_m=N(v_m2.doit(),3)
+
+st.latex(latex(v_m)+f'(m/s^2)')
+
+st.markdown(f"""
+
+where: 
+$$c_r(z)$$ is the roughness factor, given in 4.3.2 
+
+$$c_o(z)$$ is the orography factor, taken as 1,0 unless otherwise specified in 4.3.3
+""")
+
+st.markdown('4.3.2 Terrain roughness')
+
+
+st.write('The roughness factor $c_r(z)$')
+
+
+k_r2=k_r_func(z_0=z_0,z_0II=z_0II)
 
 k_r=N(k_r2.doit(),3)
-st.latex(latex(k_r))
 
-st.markdown('---')
 
-st.write('Basic velocity pressure $q_b$')
 
-q_b1=q_b_func()
-st.latex(latex(q_b1))
-
-q_b2=q_b_func(rho=rho, v_b=v_b.rhs)
-
-st.latex(latex(q_b2))
-
-q_b=N(q_b2.doit(),3)
-st.latex(latex(q_b))
-
-st.markdown('---')
-
-st.write('The turbulent component of wind velocity has a mean value of 0 and a standard deviation $\sigma_v$')
-
-sigma_v1=sigma_v_func()
-st.latex(latex(sigma_v1))
-
-sigma_v2=sigma_v_func(k_r=k_r.rhs, v_b=v_b.rhs, k_I=k_I)
-
-st.latex(latex(sigma_v2))
-
-sigma_v=N(sigma_v2.doit(),3)
-st.latex(latex(sigma_v))
-
-st.markdown('---')
-
-st.write('$c_r(z)$')
 c_r1=c_r_func()
 st.latex(latex(c_r1))
 
@@ -124,23 +154,69 @@ c_r=N(c_r2.doit(),3)
 
 st.latex(latex(c_r))
 
+st.markdown(f"""
+
+where:
+	 
+$z_0$ is the roughness length 
+
+""")
+
+st.markdown('4.3.2 Terrain roughness')
+
+
+
+st.write('Terrain factor depending on the roughness length $z_0$')
+
+k_r1=k_r_func()
+st.latex(latex(k_r1))
+
+k_r2=k_r_func(z_0=z_0,z_0II=z_0II)
+
+st.latex(latex(k_r2))
+
+k_r=N(k_r2.doit(),3)
+st.latex(latex(k_r))
+
+st.markdown(f"""
+
+where:
+$$z_{{0,II}}$$ = 0,05 m (terrain category II, Table 4.1) 
+
+$z_{{min}}$ is the minimum height defined in Table 4.1 
+
+z_{{max}} is to be taken as $200$ m 
+
+""")
+
+st.markdown('4.3.3 Terrain orography')
+
+
+st.markdown('4.3.4 Large and considerably higher neighbouring structures ')
+
+
+
+st.markdown('4.3.5 Closely spaced buildings and obstacles')
+
+
+
 st.markdown('---')
+st.markdown('**4.4 Wind turbulence**')
+st.write('The turbulent component of wind velocity has a mean value of 0 and a standard deviation $\sigma_v$')
 
-st.write("$v_m$")
-v_m1=v_m_func()
-st.latex(latex(v_m1))
+sigma_v1=sigma_v_func()
+st.latex(latex(sigma_v1))
 
-v_m2=v_m_func(z=z,c_r=c_r.rhs, c_0=c_0,v_b=v_b.rhs)
+sigma_v2=sigma_v_func(k_r=k_r.rhs, v_b=v_b.rhs, k_I=k_I)
 
-st.latex(latex(v_m2))
+st.latex(latex(sigma_v2))
 
-v_m=N(v_m2.doit(),3)
-
-st.latex(latex(v_m)+f'(m/s^2)')
+sigma_v=N(sigma_v2.doit(),3)
+st.latex(latex(sigma_v))
 
 
 st.markdown('---')
-st.write('$I_v$')
+st.write(' The turbulence intensity $I_v$ at height z is defined as')
 
 I_v1=I_v_func()
 st.latex(latex(I_v1))
@@ -148,12 +224,33 @@ st.latex(latex(I_v1))
 I_v =I_v_func(z=z,z_min=z_min, z_max=z_max, z_0=z_0, sigma_v=sigma_v.rhs, v_m=v_m.rhs, UE=False)
 
 #st.latex(latex(I_v2))
-#I_v=I_v2.doit()
+
 st.latex(latex(I_v))
+
+
+st.markdown(f"""
+
+where: 
+	
+$k_I$ is the turbulence factor. The value of $k_I$ may be given in the National Annex. The recommended value 
+for $k_I$ is $1,0$. 
+
+$c_o$ is the orography factor as described in 4.3.3 
+
+$z_0$ is the roughness length, given in Table 4.1 
+
+""")
 
 st.markdown('---')
 
-st.write("$q_p(z)$")
+st.markdown('**4.5 Peak velocity pressure**')
+
+st.write("The peak velocity pressure q $q_p(z)$")
+
+q_b2=q_b_func(rho=rho, v_b=v_b.rhs)
+
+q_b=N(q_b2.doit(),3)
+
 q_p1=q_p_func()
 st.latex(latex(q_p1))
 
@@ -165,7 +262,16 @@ q_p=N(q_p2.doit(),3)
 
 st.latex(latex(q_p))
 
+st.markdown(f"""
 
+where: 
+	
+$\\rho$ is the air density, which depends on the altitude, temperature and barometric pressure to be 
+expected in the region during wind storms 
+
+$c_e(z)$ is the exposure factor given in Expression (4.9) 
+
+""")
 st.markdown('---')
 
 st.write("$c_e(z)$")
@@ -180,7 +286,18 @@ c_e=N(c_e2.doit(),3)
 
 st.latex(latex(c_e))
 
-st.markdown('---')
+st.markdown('$q_b$ is the basic velocity pressure given in Expression (4.10)')
+
+q_b1=q_b_func()
+st.latex(latex(q_b1))
+
+q_b2=q_b_func(rho=rho, v_b=v_b.rhs)
+
+st.latex(latex(q_b2))
+
+q_b=N(q_b2.doit(),3)
+st.latex(latex(q_b))
+
 
 
 # Generate 1000 points linearly spaced between 0 and 100
