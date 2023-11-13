@@ -19,7 +19,7 @@ K = st.sidebar.number_input('K=', value= 0.2, min_value=0.0, step=0.01, format="
 n = st.sidebar.number_input('n =', value= 0.5, min_value=0.0, step=0.01, format="%.3f")#0.5
 rho = st.sidebar.number_input('Density of  air $\\rho [kg/m^3]$ =', value= 1.25, min_value=0.0, step=0.01, format="%.3f")
 z_max = st.sidebar.number_input('Maximum height $z_{max} [m]$ =', value= 200.0, min_value=10.0, step=1.0, format="%.3f")#200.0  # m
-z_0 = st.sidebar.number_input('Base height $z_{0} [m]$ =', value= 0.003, min_value=0.0, step=0.001, format="%.3f")#0.003  # m
+z_0 = st.sidebar.number_input('Base height $z_{0} [m]$ =', value= 0.3, min_value=0.0, step=0.001, format="%.3f")#0.003  # m
 z_min = st.sidebar.number_input('Minimum height $z_{min} [m]$ =', value= 1.0, min_value=0.0, step=0.10, format="%.3f")#1.0  # m
 z_0II = st.sidebar.number_input('$z_{0II} [m]$ =', value= 0.005, min_value=0.0, step=0.001, format="%.3f")#symbols('z_0II')#0.005  # m
 k_I = st.sidebar.number_input('$k_I=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")#1.00
