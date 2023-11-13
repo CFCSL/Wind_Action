@@ -180,26 +180,25 @@ c_e=N(c_e2.doit(),3)
 
 st.latex(latex(c_e))
 
+st.markdown('---')
+
+
 # Generate 1000 points linearly spaced between 0 and 100
-z = np.linspace(0, 100, 1000)
+z_values = np.linspace(0, 100, 1000)
+c_ez=c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_max,z_0=z_0,z_min=z_min,z_0II=z_0II, k_I=k_I, A_ref=A_ref, c_d=c_d, c_f=c_f,c_0=c_0)
+# Calculate c_e for each value of z
+c_ez_values = [c_ez for z in z_values]
 
-# Calculate e_e using the c_e_func
-c_e = c_e_func(z,q_p=q_p.rhs, q_b=q_b.rhs)
+# Plotting the results
+plt.plot( c_e_values,z_values)
+plt.xlabel('$c_e(z)$')
+plt.ylabel('z')
+plt.title('Plot of $c_e(z)$')
 
-st.write(c_e)
-
-# =============================================================================
-# # Plotting the results
-# plt.plot(z, c_e)
-# plt.xlabel('z')
-# plt.ylabel('c_e')
-# plt.title('Plot of c_e_func')
-# 
-# # Display the plot in Streamlit
-# st.pyplot()
-# 
-# =============================================================================
-
+# Display the plot in Streamlit
+st.pyplot()
+showPyplotGlobalUse = False
+st.set_option('deprecation.showPyplotGlobalUse', False)
 
 
 

@@ -11,6 +11,7 @@ from sympy import Piecewise, nan
 from sympy import *
 from sympy import N
 init_printing()
+import matplotlib.pyplot as plt
 
 def round_expr(expr, num_digits=3):
 	return expr.xreplace({n : round(n, num_digits) for n in expr.atoms(Number)})
@@ -42,12 +43,7 @@ c_0 = symbols('c_0')#1.00
 v_b=symbols('v_b')
 
 
-b = symbols('b')
-m = symbols('m')
-rho = symbols('rho')
-V_r = symbols('V_r')
-L = symbols('L')
-f_B = symbols('f_B')
+
 
 
 
@@ -172,5 +168,96 @@ def c_e_func(z=z,q_p=q_p, q_b=q_b):
 	exp = q_p / q_b
 	return Eq(c_e, exp,evaluate=False)
 
+#%%
 
 
+# Define values
+c_dir = 1.0
+c_season = 1.0
+v_b0 = 27.0  # km/h
+p = 0.01
+K = 0.2
+n = 0.5
+rho = 1.25
+z_max = 200.0  # m
+z_0 = 0.003  # m
+z_min = 1.0  # m
+z_0II = 0.005  # m
+k_I = 1.00
+A_ref = 800.0  # m2
+c_d = 1.00
+c_f = 1.55
+c_0 = 1.00
+#parameters=[c_dir,c_season,v_b0,p,K,n,rho,z_max,z_0,z_min,z_0II, k_I, A_ref, c_d, c_f,c_0]
+#parameters=[c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_max,z_0=z_0,z_min=z_min,z_0II=z_0II, k_I=k_I, A_ref=A_ref, c_d=c_d, c_f=c_f,c_0=c_0]
+def c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_max,z_0=z_0,z_min=z_min,z_0II=z_0II, k_I=k_I, A_ref=A_ref, c_d=c_d, c_f=c_f,c_0=c_0):
+	
+
+# Basic velocity pressure given in Expression (4.10):
+
+	def v_b():
+		exp=c_dir * c_season * v_b0
+		return exp
+
+
+	def c_prob():
+		exp = ((1 - K * np.log(-np.log(1 - p))) / (1 - K * np.log(-np.log(0.98))) )** n
+		
+		return exp
+
+	def k_r():
+
+		exp = 0.19 * (z_0 / z_0II) ** 0.07
+		return exp
+
+	def q_b():
+
+		exp= 0.5 * rho * v_b() ** 2  # Fixed operator and added 0.5
+		return exp
+
+	def sigma_v():
+
+		exp = k_r() * v_b() * k_I
+		return exp
+
+	def c_r(z):
+		condlist = [np.logical_and(z >= z_min, z <= z_max), z <= z_min]
+		funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
+		exp = np.piecewise(z, condlist, funclist)
+		return exp
+
+	def v_m(z):
+
+		exp = c_r(z) * c_0 * v_b()
+		return exp
+
+	def I_v(z):
+		condlist = [np.logical_and(z >= z_min, z <= z_max), z <= z_min]
+		funclist = [sigma_v() / v_m(z), sigma_v() / v_m(z_min)]
+		exp = np.piecewise(z, condlist, funclist)
+		return exp
+
+	def q_p(z):
+
+		exp = (1 + 7 * I_v(z)) * 0.5 * rho * v_m(z) ** 2  # Fixed operator and added 0.5
+		return exp
+
+	val = q_p(z) / q_b()
+	return val
+
+
+
+
+# Generate 1000 points linearly spaced between 0 and 100
+z_values = np.linspace(0, 100, 1000)
+
+# Calculate c_e for each value of z
+c_e_values = [c_ez(z) for z in z_values]
+
+# Plotting the results
+plt.plot(c_e_values,z_values)
+plt.xlabel('c_z')
+plt.ylabel('z')
+plt.title('Plot of c_e vs z')
+plt.grid(True)  # Add a grid for better readability
+plt.show()
