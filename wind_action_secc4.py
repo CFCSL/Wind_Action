@@ -22,7 +22,7 @@ def round_equation(eq, num_digits=3):
 	rounded_rhs = round_expr(rhs, num_digits)
 	return Eq(lhs, rounded_rhs)
 
-
+                         
 c_dir = symbols('c_dir')#1.0
 c_season = symbols('c_season')#1.0
 v_b0 = symbols('v_b0')#27.0  # km/h
@@ -223,6 +223,10 @@ def c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_m
 	def c_r(z):
 		condlist = [np.logical_and(z >= z_min, z <= z_max), z <= z_min]
 		funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
+		if z != 0 and z_min != 0 and z_0 != 0:
+			funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
+		else:
+			pass  
 		#funclist = [k_r() * np.log(np.maximum(z, 1e-6) / z_0), k_r() * np.log(np.maximum(z_min, 1e-6) / z_0)]
 		exp = np.piecewise(z, condlist, funclist)
 		return exp
@@ -255,10 +259,13 @@ z_values = np.linspace(0, 100, 1000)
 # Calculate c_e for each value of z
 c_e_values = [c_ez(z) for z in z_values]
 
-# Plotting the results
-plt.plot(c_e_values,z_values)
-plt.xlabel('c_z')
-plt.ylabel('z')
-plt.title('Plot of c_e vs z')
-plt.grid(True)  # Add a grid for better readability
-plt.show()
+# =============================================================================
+# # Plotting the results
+# plt.plot(c_e_values,z_values)
+# plt.xlabel('c_z')
+# plt.ylabel('z')
+# plt.title('Plot of c_e vs z')
+# plt.grid(True)  # Add a grid for better readability
+# plt.show()
+# =============================================================================
+

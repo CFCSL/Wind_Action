@@ -5,19 +5,22 @@ Created on Fri Nov 10 09:59:43 2023
 
 @author: namnguyen
 """
-
+import pandas as pd
+import numpy as np
 import streamlit as st
 from wind_action_secc4 import *
 import matplotlib.pyplot as plt
+init_printing()
 
 
-c_dir = st.sidebar.number_input('Direction coeffition $c_{dir}$ =', value= 1.0, min_value=0.0, step=0.1, format="%.3f")#1.0
-c_season = st.sidebar.number_input('Season coeffition $c_{season}$ =', value= 1.0, min_value=0.0, step=0.1, format="%.3f")#1.0
-v_b0 = st.sidebar.number_input('base velocity #$v_{b0}[km/h]$ =', value= 27.0, min_value=0.0, step=1.0, format="%.3f")#27.0  # km/h
+c_dir = st.sidebar.number_input('Enter c_dir', value=1.0, min_value=0.0, step=0.1, format="%.3f")
+c_dir = st.sidebar.number_input('Direction coefficient $c_{dir}=$', value= 1.0, min_value=0.0, step=0.1, format="%.3f")#1.0
+c_season = st.sidebar.number_input('Season coeffition $c_{season} =$', value= 1.0, min_value=0.0, step=0.1, format="%.3f")#1.0
+v_b0 = st.sidebar.number_input('base velocity $v_{b0}[km/h] =$', value= 27.0, min_value=0.0, step=1.0, format="%.3f")#27.0  # km/h
 p = st.sidebar.number_input('p =', value= 0.01, min_value=0.0, step=0.01, format="%.3f")#0.01
 K = st.sidebar.number_input('K=', value= 0.2, min_value=0.0, step=0.01, format="%.3f")#0.2
 n = st.sidebar.number_input('n =', value= 0.5, min_value=0.0, step=0.01, format="%.3f")#0.5
-rho = st.sidebar.number_input('Density of  air $\\rho [kg/m^3]$ =', value= 1.25, min_value=0.0, step=0.01, format="%.3f")
+rho = st.sidebar.number_input('Density of  air $\\rho [kg/m^3] =$', value= 1.25, min_value=0.0, step=0.01, format="%.3f")
 z_max = st.sidebar.number_input('Maximum height $z_{max} [m]$ =', value= 200.0, min_value=10.0, step=1.0, format="%.3f")#200.0  # m
 z_0 = st.sidebar.number_input('Base height $z_{0} [m]$ =', value= 0.3, min_value=0.0, step=0.001, format="%.3f")#0.003  # m
 z_min = st.sidebar.number_input('Minimum height $z_{min} [m]$ =', value= 1.0, min_value=0.0, step=0.10, format="%.3f")#1.0  # m
@@ -92,9 +95,9 @@ for $K$ and $0,5$ for $n$.
 
 st.markdown('---')
 st.markdown('**4.3 Mean wind** ')
-st.markdown('4.3.1 Variation with height')
+st.markdown('**4.3.1 Variation with height**')
 
-st.write('The mean wind velocity vm(z) at a height z above the terrain depends on the terrain roughness and orography and on the basic wind velocity, vb, and should be determined using Expression (4.3)')
+st.write('The mean wind velocity $v_m(z)$ at a height z above the terrain depends on the terrain roughness and orography and on the basic wind velocity, $v_b$, and should be determined using Expression (4.3)')
 
 st.write("$v_m$")
 
@@ -127,7 +130,7 @@ $$c_r(z)$$ is the roughness factor, given in 4.3.2
 $$c_o(z)$$ is the orography factor, taken as 1,0 unless otherwise specified in 4.3.3
 """)
 
-st.markdown('4.3.2 Terrain roughness')
+st.markdown('**4.3.2 Terrain roughness**')
 
 
 st.write('The roughness factor $c_r(z)$')
@@ -162,9 +165,6 @@ $z_0$ is the roughness length
 
 """)
 
-st.markdown('4.3.2 Terrain roughness')
-
-
 
 st.write('Terrain factor depending on the roughness length $z_0$')
 
@@ -189,20 +189,20 @@ z_{{max}} is to be taken as $200$ m
 
 """)
 
-st.markdown('4.3.3 Terrain orography')
+st.markdown('**4.3.3 Terrain orography**')
 
 
-st.markdown('4.3.4 Large and considerably higher neighbouring structures ')
+st.markdown('**4.3.4 Large and considerably higher neighbouring structures**')
 
 
 
-st.markdown('4.3.5 Closely spaced buildings and obstacles')
+st.markdown('**4.3.5 Closely spaced buildings and obstacles**')
 
 
 
 st.markdown('---')
 st.markdown('**4.4 Wind turbulence**')
-st.write('The turbulent component of wind velocity has a mean value of 0 and a standard deviation $\sigma_v$')
+st.write('The turbulent component of wind velocity has a mean value of $0$ and a standard deviation $\sigma_v$')
 
 sigma_v1=sigma_v_func()
 st.latex(latex(sigma_v1))
@@ -216,8 +216,8 @@ st.latex(latex(sigma_v))
 
 
 st.markdown('---')
-st.write(' The turbulence intensity $I_v$ at height z is defined as')
-
+st.write(' The turbulence intensity $I_v$ at height $z$ is defined as')
+S
 I_v1=I_v_func()
 st.latex(latex(I_v1))
 
@@ -272,9 +272,7 @@ expected in the region during wind storms
 $c_e(z)$ is the exposure factor given in Expression (4.9) 
 
 """)
-st.markdown('---')
 
-st.write("$c_e(z)$")
 c_e1=c_e_func()
 st.latex(latex(c_e1))
 
@@ -310,7 +308,7 @@ c_ez_values = [c_ez for z in z_values]
 plt.plot( c_e_values,z_values)
 plt.xlabel('$c_e(z)$')
 plt.ylabel('z')
-plt.title('Plot of $c_e(z)$')
+plt.title(f'''Plot of  $z$ vs $c_e(z)$''')
 
 # Display the plot in Streamlit
 st.pyplot()
