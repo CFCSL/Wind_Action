@@ -223,7 +223,7 @@ def c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_m
 
 	def c_r(z):
 		condlist = [np.logical_and(z >= z_min, z <= z_max), z <= z_min]
-		funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
+		#funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
 		if z != 0 and z_min != 0 and z_0 != 0:
 			funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
 		else:
