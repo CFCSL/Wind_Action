@@ -22,7 +22,7 @@ def round_equation(eq, num_digits=3):
 	rounded_rhs = round_expr(rhs, num_digits)
 	return Eq(lhs, rounded_rhs)
 
-                         
+						 
 c_dir = symbols('c_dir')#1.0
 c_season = symbols('c_season')#1.0
 v_b0 = symbols('v_b0')#27.0  # km/h
@@ -122,13 +122,14 @@ def c_r_func(z=z, z_min=z_min, z_max=z_max, z_0=z_0, k_r=k_r, UE=False):
 	return Eq(c_r, exp, evaluate=False)
 
 v_m=symbols('v_m',cls=Function)(z)
-def v_m_func(z=z,c_r=c_r, c_0=c_0,v_b=v_b):
+def v_m_func(z=z, c_0=c_0,v_b=v_b,c_r=c_r):
 	z=UnevaluatedExpr(z)
 	c_r=UnevaluatedExpr(c_r)
 	c_0=UnevaluatedExpr(c_0)
 	v_b=UnevaluatedExpr(v_b)
 	
-	exp = c_r * c_0 * v_b
+	#exp = c_r_func(z).rhs * c_0 * v_b
+	exp = c_r* c_0 * v_b
 	return Eq(v_m, exp, evaluate=False)
 
 I_v=symbols('I_v',cls=Function)(z)
@@ -232,7 +233,6 @@ def c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_m
 		return exp
 
 	def v_m(z):
-
 		exp = c_r(z) * c_0 * v_b()
 		return exp
 
@@ -259,13 +259,153 @@ z_values = np.linspace(0, 100, 1000)
 # Calculate c_e for each value of z
 c_e_values = [c_ez(z) for z in z_values]
 
+# Plotting the results
+plt.plot(c_e_values,z_values, color="r")
+plt.xlabel('c_z')
+plt.ylabel('z')
+plt.title('Plot of c_e vs z')
+plt.grid(True)  # Add a grid for better readability
+plt.show()
+
+#%%
+class Calculator:
 # =============================================================================
-# # Plotting the results
-# plt.plot(c_e_values,z_values)
-# plt.xlabel('c_z')
-# plt.ylabel('z')
-# plt.title('Plot of c_e vs z')
-# plt.grid(True)  # Add a grid for better readability
-# plt.show()
+# 	def __init__(self, c_dir, c_season, v_b0, p, K, n, rho, z_max, z_0, z_min, z_0II, k_I, A_ref, c_d, c_f, c_0):
+# 		self.c_dir = c_dir
+# 		self.c_season = c_season
+# 		self.v_b0 = v_b0
+# 		self.p = p
+# 		self.K = K
+# 		self.n = n
+# 		self.rho = rho
+# 		self.z_max = z_max
+# 		self.z_0 = z_0
+# 		self.z_min = z_min
+# 		self.z_0II = z_0II
+# 		self.k_I = k_I
+# 		self.A_ref = A_ref
+# 		self.c_d = c_d
+# 		self.c_f = c_f
+# 		self.c_0 = c_0
 # =============================================================================
+		
+	def __init__(self, params):
+		self.c_dir, self.c_season, self.v_b0, self.p, self.K, self.n, self.rho, \
+		self.z_max, self.z_0, self.z_min, self.z_0II, self.k_I, self.A_ref, \
+		self.c_d, self.c_f, self.c_0,self.c_pe,self.c_pi, self.c_fr, self.A_fr = params
+
+	def v_b(self):
+		exp = self.c_dir * self.c_season * self.v_b0
+		return exp
+
+	def c_prob(self):
+		exp = ((1 - self.K * np.log(-np.log(1 - self.p))) / (1 - self.K * np.log(-np.log(0.98))))**self.n
+		return exp
+
+	def k_r(self):
+		exp = 0.19 * (self.z_0 / self.z_0II) ** 0.07
+		return exp
+
+	def q_b(self):
+		exp = 0.5 * self.rho * self.v_b()**2
+		return exp
+
+	def sigma_v(self):
+		exp = self.k_r() * self.v_b() * self.k_I
+		return exp
+
+	def c_r(self, z):
+		condlist = [np.logical_and(z >= self.z_min, z <= self.z_max), z <= self.z_min]
+		funclist = [self.k_r() * np.log(z / self.z_0), self.k_r() * np.log(self.z_min / self.z_0)]
+		if z != 0 and self.z_min != 0 and self.z_0 != 0:
+			funclist = [self.k_r() * np.log(z / self.z_0), self.k_r() * np.log(self.z_min / self.z_0)]
+		else:
+			pass
+		exp = np.piecewise(z, condlist, funclist)
+		return exp
+
+	def v_m(self, z):
+		exp = self.c_r(z) * self.c_0 * self.v_b()
+		return exp
+
+	def I_v(self, z):
+		condlist = [np.logical_and(z >= self.z_min, z <= self.z_max), z <= self.z_min]
+		funclist = [self.sigma_v() / self.v_m(z), self.sigma_v() / self.v_m(self.z_min)]
+		exp = np.piecewise(z, condlist, funclist)
+		return exp
+
+	def q_p(self, z):
+		exp = (1 + 7 * self.I_v(z)) * 0.5 * self.rho * self.v_m(z)**2
+		return exp
+
+	def c_ez(self, z):
+		val = self.q_p(z) / self.q_b()
+		return val
+	def W_e(self, z):
+		exp= q_p(z)*c_pe
+		return exp
+	
+	def W_i(self, z):
+		exp= q_p(z)*c_pi
+		return exp
+	
+	def F_w(self, z):
+		exp=c_s*c_d*c_f*q_p(z)*A_ref
+		return exp
+	
+	def F_fr(self, z):
+		exp=c_fr*q_p(z)*A_fr
+		return exp
+
+
+
+
+
+
+#%%
+z_e, c_pe = symbols('z_e c_pe')
+W_e= symbols('W_e', cls=Function)(z_e)
+def W_e_func(z_e=z_e,q_p=q_p, c_pe=c_pe):
+	z_e=UnevaluatedExpr(z_e)
+	q_p=UnevaluatedExpr(q_p)
+	c_pe=UnevaluatedExpr(c_pe)
+
+	exp= q_p.subs(z,z_e)*c_pe
+	return Eq(W_e, exp, evaluate =False)
+
+
+z_i, c_p_i = symbols('z_i c_p_i')
+W_i= symbols('W_i', cls=Function)(z_i)
+def W_i_func(z_i=z_i,q_p=q_p, c_p_i=c_p_i):
+	z_i=UnevaluatedExpr(z_i)
+	q_p=UnevaluatedExpr(q_p)
+	c_p_i=UnevaluatedExpr(c_p_i)
+
+	exp= q_p.subs(z,z_i)*c_p_i
+	return Eq(W_i, exp, evaluate =False)
+
+c_d, c_s,c_f, A_ref = symbols('c_d c_s c_f A_ref')
+F_w=symbols('F_w', cls=Function)(z_e) 
+def F_w_func(z_e=z_e,c_s=c_s, c_d=c_d,c_f=c_f,q_p=q_p,A_ref=A_ref):
+	z_e=UnevaluatedExpr(z_e)
+	c_s=UnevaluatedExpr(c_s)
+	c_d=UnevaluatedExpr(c_d)
+	c_f=UnevaluatedExpr(c_f)
+	q_p=UnevaluatedExpr(q_p)
+	A_ref=UnevaluatedExpr(A_ref)
+	exp=c_s*c_d*c_f*q_p.subs(z,z_e)*A_ref
+	return Eq(F_w, exp, evaluate =False)
+
+A_fr, c_fr=symbols('A_fr c_fr')
+F_fr=symbols('F_fr', cls=Function)(z_e) 
+
+def F_fr_func(z_e=z_e,c_fr=c_fr,q_p=q_p,A_fr=A_fr):
+	z_e=UnevaluatedExpr(z_e)
+	c_fr=UnevaluatedExpr(c_fr)
+	A_fr=UnevaluatedExpr(A_fr)
+	exp=c_fr*q_p.subs(z,z_e)*A_fr
+	return Eq(F_fr, exp, evaluate =False)
+
+
+
 
