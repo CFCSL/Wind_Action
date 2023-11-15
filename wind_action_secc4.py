@@ -227,7 +227,7 @@ def c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_m
 		if z != 0 and z_min != 0 and z_0 != 0:
 			funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
 		else:
-			pass  
+			funclist=[0,0]
 		#funclist = [k_r() * np.log(np.maximum(z, 1e-6) / z_0), k_r() * np.log(np.maximum(z_min, 1e-6) / z_0)]
 		exp = np.piecewise(z, condlist, funclist)
 		return exp
