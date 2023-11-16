@@ -497,3 +497,17 @@ st.latex(latex(c_sd2))
 c_sd=N(c_sd2.doit(),2)
 st.latex(latex(c_sd))
 
+st.markdown(f"""
+(6.1) where:
+	
+$z_s$ is the reference height for determining the structural factor, see Figure 6.1. For structures where Figure 6.1 does not apply $z_s$ may be set equal to $h$, the height of the structure.
+
+$k_p$ is the peak factor defined as the ratio of the maximum value of the fluctuating part of the response to its standard deviation
+
+$I_v$ is the turbulence intensity defined in 4.4
+
+$B_2$ is the background factor, allowing for the lack of full correlation of the pressure on the structure surface
+
+$R_2$ is the resonance response factor, allowing for turbulence in resonance with the vibration mode
+""")
+
