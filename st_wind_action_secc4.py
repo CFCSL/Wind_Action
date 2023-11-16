@@ -226,7 +226,7 @@ st.latex(latex(sigma_v))
 
 st.markdown('---')
 st.write(' The turbulence intensity $I_v$ at height $z$ is defined as')
-S
+
 I_v1=I_v_func()
 st.latex(latex(I_v1))
 
@@ -427,9 +427,73 @@ st.latex(latex(F_fr2))
 F_fr=N(F_fr2.doit(),3)
 st.latex(latex(F_fr))
 
+st.markdown('---')
+st.markdown('---')
+
+st.header('**Section 6: Structural factor $c_sc_d$**')
+
+st.markdown('**6.1 General**')
+
+st.markdown(f"""
+			(1) The structural factor cscd should take into account the effect on wind actions from the non- simultaneous occurrence of peak wind pressures on the surface ($c_s$) together with the effect of the vibrations of the structure due to turbulence ($c_d$).
+""")
+
+st.markdown('**6.2 Determination of $c_sc_d$**')
+
+st.markdown(f"""
+(1) $c_sc_d$ may be determined as follows:
+	
+a) For buildings with a height less than $15 m$ the value of $c_sc_d$ may be taken as $1$.
+	
+b) For facade and roof elements having a natural frequency greater than $5 Hz$, the value of $c_sc_d$ may be taken as $1$.
+	
+c) For framed buildings which have structural walls and which are less than $100 m$ high and whose height is less than $4$ times the in-wind depth, the value of cscd may be taken as $1$.
+	
+d) For chimneys with circular cross-sections whose height is less than $60 m$ and $6,5$ times the diameter, the value of $c_sc_d$ may be taken as $1$.
+	
+e) Alternatively, for cases a), b), c) and d) above, values of cscd may be derived from 6.3.1.
+	
+f) For civil engineering works (other than bridges, which are considered in Section 8), and chimneys and buildings outside the limitations given in c) and d) above, $c_sc_d$ should be derived either from 6.3 or taken from Annex D.
+""")
+
+st.markdown('**6.3 Detailed procedure**')
+
+st.markdown('**6.3.1 Structural factor $c_sc_d$**')
+
+B=st.number_input('B=', value=20.0, step=1.0, min_value=0.0, format="%.2f")
+R=st.number_input('R=', value=10.0, step=1.0, min_value=0.0, format="%.2f")
+z_s=st.number_input('$z_s$=', value=5.0, step=1.0, min_value=0.0, format="%.2f")
+k_p=st.number_input('$k_p$=', value=0.5, step=0.1, min_value=0.0, format="%.2f")
+
+
+st.markdown('NOTE 1 The size factor $c_s$ takes into account the reduction effect on the wind action due to the non- simultaneity of occurrence of the peak wind pressures on the surface and may be obtained from Expression (6.2):')
+c_s1=c_s_func()
+st.latex(latex(c_s1))
+c_s2=c_s_func(z_s=z_s, k_p=k_p, I_v=N(calculator.I_v(z_s),3), B=B, R=R)
+st.latex(latex(c_s2))
+c_s=N(c_s2.doit(),2)
+st.latex(latex(c_s))
 
 
 
 
+st.markdown(f"""(6.2) NOTE 2 The dynamic factor $c_d$ takes into account the increasing effect from vibrations due to turbulence
+in resonance with the structure and may be obtained from Expression (6.3):""")
 
+c_d1=c_d_func()
+st.latex(latex(c_d1))
+c_d2=c_d_func(z_s=z_s, k_p=k_p, I_v=N(calculator.I_v(z_s),3), B=B, R=R)
+st.latex(latex(c_d2))
+c_d=N(c_d2.doit(),2)
+st.latex(latex(c_d))
+
+st.markdown(f"""
+(1) The detailed procedure for calculating the structural factor $c_sc_d$ is given in Expression (6.1). This procedure can only be used if the conditions given in 6.3.1 (2) apply.
+""")
+c_sd1=c_sd_func()
+st.latex(latex(c_sd1))
+c_sd2=c_sd_func(z_s=z_s, k_p=k_p, I_v=N(calculator.I_v(z_s),3), B=B, R=R)
+st.latex(latex(c_sd2))
+c_sd=N(c_sd2.doit(),2)
+st.latex(latex(c_sd))
 

@@ -6,7 +6,7 @@ Created on Mon Nov  6 14:21:00 2023
 """
 
 import numpy as np
-from sympy import symbols, Eq, Function,UnevaluatedExpr, Mul, Rational
+from sympy import symbols, Eq, Function,UnevaluatedExpr, Mul, Rational, sqrt
 from sympy import Piecewise, nan
 from sympy import *
 from sympy import N
@@ -332,10 +332,17 @@ class Calculator:
 		return exp
 
 	def I_v(self, z):
-		condlist = [np.logical_and(z >= self.z_min, z <= self.z_max), z <= self.z_min]
+
+		condlist = [z >= self.z_min, z <= self.z_min]
 		funclist = [self.sigma_v() / self.v_m(z), self.sigma_v() / self.v_m(self.z_min)]
-		exp = np.piecewise(z, condlist, funclist)
+		exp = Piecewise((funclist[0], condlist[0]), (funclist[1], condlist[1]))
 		return exp
+	# =============================================================================
+# 		condlist = [np.logical_and(z >= self.z_min, z <= self.z_max), z <= self.z_min]
+# 		funclist = [self.sigma_v() / self.v_m(z), self.sigma_v() / self.v_m(self.z_min)]
+# 		exp = np.piecewise(z, condlist, funclist)
+# 		return exp
+# =============================================================================
 
 	def q_p(self, z):
 		exp = (1 + 7 * self.I_v(z)) * 0.5 * self.rho * self.v_m(z)**2
@@ -359,9 +366,6 @@ class Calculator:
 	def F_fr(self, z):
 		exp=c_fr*q_p(z)*A_fr
 		return exp
-
-
-
 
 
 
@@ -409,6 +413,39 @@ def F_fr_func(z_e=z_e,c_fr=c_fr,q_p=q_p,A_fr=A_fr):
 	exp=c_fr*q_p.subs(z,z_e)*A_fr
 	return Eq(F_fr, exp, evaluate =False)
 
+c_s, z_s, B, R, k_p=symbols('c_s z_s B R k_p')
+def c_s_func(z_s=z_s, k_p=k_p, I_v=I_v, B=B, R=R):
+	z_s=UnevaluatedExpr(z_s)
+	k_p=UnevaluatedExpr(k_p)
+	I_v=UnevaluatedExpr(I_v)
+	B=UnevaluatedExpr(B)
+	R=UnevaluatedExpr(R)
+	
+	exp = (1 + 7 * I_v.subs(z, z_s)  * sqrt(B**2))/(1+7*I_v.subs(z, z_s))
+	return Eq(c_s, exp, evaluate=False)
+
+	
+c_d=symbols('c_d ')
+def c_d_func(z_s=z_s, k_p=k_p, I_v=I_v, B=B, R=R):
+	z_s=UnevaluatedExpr(z_s)
+	k_p=UnevaluatedExpr(k_p)
+	I_v=UnevaluatedExpr(I_v)
+	B=UnevaluatedExpr(B)
+	R=UnevaluatedExpr(R)
+	
+	exp = (1 + 2 *k_p* I_v.subs(z, z_s)*sqrt(B**2+R**2))/(1+7*I_v.subs(z, z_s)*sqrt(B**2))
+	return Eq(c_d, exp, evaluate=False)
+
+c_sd=symbols('c_sd ')
+def c_sd_func(z_s=z_s, k_p=k_p, I_v=I_v, B=B, R=R):
+	z_s=UnevaluatedExpr(z_s)
+	k_p=UnevaluatedExpr(k_p)
+	I_v=UnevaluatedExpr(I_v)
+	B=UnevaluatedExpr(B)
+	R=UnevaluatedExpr(R)
+	
+	exp = (1 + 2 *k_p* I_v.subs(z, z_s)*sqrt(B**2+R**2))/(1+7*I_v.subs(z, z_s))
+	return Eq(c_sd, exp, evaluate=False)
 
 
 
