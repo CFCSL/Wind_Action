@@ -238,21 +238,34 @@ def c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_m
 # 		exp = np.piecewise(z, condlist, funclist)
 # 		return exp
 # =============================================================================
-	def c_r(z):
+# =============================================================================
+# 	def c_r(z):
+# 		
+# 		condlist = [np.logical_and(z >= z_min, z <= z_max), z < z_min, z > z_max]
+# 		
+# 		epsilon = 1e-6  # A small positive value to avoid division by zero
+# 		
+# 		funclist = [
+# 			k_r() * np.log(z / (z_0 + epsilon)),  # for z in [z_min, z_max]
+# 			k_r() * np.log(z_min / (z_0 + epsilon)),  # for z < z_min
+# 			k_r() * np.log(z_max / (z_0 + epsilon))  # for z > z_max
+# 		]
+# 		
+# 		exp = np.piecewise(z, condlist, funclist)
+# 		return exp
+# =============================================================================
+	def c_r(z, z_min, z_max, z_0):
+		epsilon = 1e-6  # A small positive value to avoid division by zero
 		
-		condlist = [np.logical_and(z >= z_min, z <= z_max), z < z_min, z > z_max]
+		condition_1 = np.logical_and(z >= z_min, z <= z_max)
+		condition_2 = z < z_min
+		condition_3 = z > z_max
 		
-		epsilon = 1e-10  # A small positive value to avoid division by zero
+		exp = np.where(condition_1, k_r() * np.log(z / (z_0 + epsilon)),
+					   np.where(condition_2, k_r() * np.log(z_min / (z_0 + epsilon)),
+								k_r() * np.log(z_max / (z_0 + epsilon))))
 		
-		funclist = [
-			k_r() * np.log(z / (z_0 + epsilon)),  # for z in [z_min, z_max]
-			k_r() * np.log(z_min / (z_0 + epsilon)),  # for z < z_min
-			k_r() * np.log(z_max / (z_0 + epsilon))  # for z > z_max
-		]
-		
-		exp = np.piecewise(z, condlist, funclist)
 		return exp
-
 	def v_m(z):
 		exp = c_r(z) * c_0 * v_b()
 		return exp
