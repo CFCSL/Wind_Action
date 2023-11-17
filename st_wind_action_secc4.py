@@ -11,7 +11,7 @@ import streamlit as st
 from wind_action_secc4 import *
 import matplotlib.pyplot as plt
 init_printing()
-st.set_option('browser.gatherUsageStats', False)
+#st.set_option('browser.gatherUsageStats', False)
 
 
 c_dir = st.sidebar.number_input('Direction coefficient $c_{dir}=$', value= 1.0, min_value=0.0, step=0.1, format="%.3f")#1.0
