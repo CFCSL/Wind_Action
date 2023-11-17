@@ -221,20 +221,34 @@ def c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_m
 		exp = k_r() * v_b() * k_I
 		return exp
 
-	def c_r(z):
-		condlist = [np.logical_and(z >= z_min, z <= z_max), z <= z_min]
-		#funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
+# =============================================================================
+# 	def c_r(z):
+# 		condlist = [np.logical_and(z >= z_min, z <= z_max), z <= z_min]
+# 		#funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
+# 		epsilon = 1e-10  # A small positive value to avoid division by zero
+# 		funclist = [k_r() * np.log(z / (z_0 + epsilon)), k_r() * np.log(z_min / (z_0 + epsilon))]
+# # =============================================================================
+# # 		if z != 0 and z_min != 0 and z_0 != 0:
+# # 			funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
+# # 		else:
+# # 			pass
+# # =============================================================================
+# 		#	funclist=[0,0]
+# 		#	funclist = [k_r() * np.log(np.maximum(z, 1e-6) / z_0), k_r() * np.log(np.maximum(z_min, 1e-6) / z_0)]
+# 		exp = np.piecewise(z, condlist, funclist)
+# 		return exp
+# =============================================================================
+	def c_r(z, z_min, z_max, z_0):
+		condlist = [np.logical_and(z >= z_min, z <= z_max), z < z_min, z > z_max]
+		
 		epsilon = 1e-10  # A small positive value to avoid division by zero
-
-		funclist = [k_r() * np.log(z / (z_0 + epsilon)), k_r() * np.log(z_min / (z_0 + epsilon))]
-# =============================================================================
-# 		if z != 0 and z_min != 0 and z_0 != 0:
-# 			funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
-# 		else:
-# 			pass
-# =============================================================================
-		#	funclist=[0,0]
-		#	funclist = [k_r() * np.log(np.maximum(z, 1e-6) / z_0), k_r() * np.log(np.maximum(z_min, 1e-6) / z_0)]
+		
+		funclist = [
+			k_r() * np.log(z / (z_0 + epsilon)),  # for z in [z_min, z_max]
+			k_r() * np.log(z_min / (z_0 + epsilon)),  # for z < z_min
+			k_r() * np.log(z_max / (z_0 + epsilon))  # for z > z_max
+		]
+		
 		exp = np.piecewise(z, condlist, funclist)
 		return exp
 
