@@ -254,7 +254,7 @@ def c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_m
 # 		exp = np.piecewise(z, condlist, funclist)
 # 		return exp
 # =============================================================================
-	def c_r(z, z_min, z_max, z_0):
+	def c_r(z):
 		epsilon = 1e-6  # A small positive value to avoid division by zero
 		
 		condition_1 = np.logical_and(z >= z_min, z <= z_max)
