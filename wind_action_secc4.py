@@ -43,10 +43,6 @@ c_0 = symbols('c_0')#1.00
 v_b=symbols('v_b')
 
 
-
-
-
-
 # Basic velocity pressure given in Expression (4.10):
 #v_b = c_dir * c_season * v_b0
 def v_b_func(c_dir=c_dir, c_season=c_season, v_b0=v_b0):
@@ -69,10 +65,7 @@ def c_prob_func(K=K,p=p,n=n):
 	n=UnevaluatedExpr(n)
 	
 	val=((1 - Mul(K , log(-log(1 - p)),evaluate=False))/ (1 - Mul(K , log(-log(0.98,evaluate=False),evaluate=False),evaluate=False))) **n
-	#val=((1 - K * np.log(p)) / 2) ** n
-	#val=((1 - K ) / (1 - K * np.log(0.98))) ** n
-	#val = ((1 - K * log(-log(1 - p)))**n, (1 - K * log(-log(0.98)))**n)
-	
+
 	return Eq(c_prob,val, evaluate=False)
 
 # Terrain factor depending on the roughness length z0
@@ -189,8 +182,6 @@ A_ref = 800.0  # m2
 c_d = 1.00
 c_f = 1.55
 c_0 = 1.00
-#parameters=[c_dir,c_season,v_b0,p,K,n,rho,z_max,z_0,z_min,z_0II, k_I, A_ref, c_d, c_f,c_0]
-#parameters=[c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_max,z_0=z_0,z_min=z_min,z_0II=z_0II, k_I=k_I, A_ref=A_ref, c_d=c_d, c_f=c_f,c_0=c_0]
 def c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_max,z_0=z_0,z_min=z_min,z_0II=z_0II, k_I=k_I, A_ref=A_ref, c_d=c_d, c_f=c_f,c_0=c_0):
 	
 
@@ -224,39 +215,10 @@ def c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_m
 	def c_r(z):
 		condlist = [np.logical_and(z >= z_min, z <= z_max), z <= z_min]
 		funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
-		#epsilon = 1e-10  # A small positive value to avoid division by zero
-		#funclist = [k_r() * np.log(z / (z_0 + epsilon)), k_r() * np.log(z_min / (z_0 + epsilon))]
-# =============================================================================
-# 		if z != 0 and z_min != 0 and z_0 != 0:
-# 			funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
-# 		else:
-# 			pass
-# =============================================================================
-		#	funclist=[0,0]
-		#	funclist = [k_r() * np.log(np.maximum(z, 1e-6) / z_0), k_r() * np.log(np.maximum(z_min, 1e-6) / z_0)]
 		exp = np.piecewise(z, condlist, funclist)
 		return exp
 
-# =============================================================================
-# 	def c_r(z):
-# 		
-# 		epsilon = 1e-10  # A small positive value to avoid division by zero
-# 	
-# 		# Define conditions
-# 		condition_1 = (z >= z_min) & (z <= z_max)
-# 		condition_2 = z < z_min
-# 		condition_3 = z > z_max
-# 	
-# 		# Apply conditions and compute c_r
-# 		if condition_1:
-# 			exp = k_r() * np.log(z / (z_0 + epsilon))
-# 		elif condition_2:
-# 			exp = k_r() * np.log(z_min / (z_0 + epsilon))
-# 		else:  # condition_3
-# 			exp = k_r() * np.log(z_max / (z_0 + epsilon))
-# 
-# 		return exp
-# =============================================================================
+
 	def v_m(z):
 		exp = c_r(z) * c_0 * v_b()
 		return exp
@@ -278,19 +240,21 @@ def c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_m
 
 
 
-# Generate 1000 points linearly spaced between 0 and 100
-z_values = np.linspace(0, 100, 1000)
-
-# Calculate c_e for each value of z
-c_e_values = [c_ez(z) for z in z_values]
-
-# Plotting the results
-plt.plot(c_e_values,z_values, color="r")
-plt.xlabel('c_z')
-plt.ylabel('z')
-plt.title('Plot of c_e vs z')
-plt.grid(True)  # Add a grid for better readability
-plt.show()
+# =============================================================================
+# # Generate 1000 points linearly spaced between 0 and 100
+# z_values = np.linspace(0, 100, 1000)
+# 
+# # Calculate c_e for each value of z
+# c_e_values = [c_ez(z) for z in z_values]
+# 
+# # Plotting the results
+# plt.plot(c_e_values,z_values, color="r")
+# plt.xlabel('c_z')
+# plt.ylabel('z')
+# plt.title('Plot of c_e vs z')
+# plt.grid(True)  # Add a grid for better readability
+# plt.show()
+# =============================================================================
 
 #%%
 class Calculator:
@@ -359,12 +323,7 @@ class Calculator:
 		funclist = [self.sigma_v() / self.v_m(z), self.sigma_v() / self.v_m(self.z_min)]
 		exp = Piecewise((funclist[0], condlist[0]), (funclist[1], condlist[1]))
 		return exp
-	# =============================================================================
-# 		condlist = [np.logical_and(z >= self.z_min, z <= self.z_max), z <= self.z_min]
-# 		funclist = [self.sigma_v() / self.v_m(z), self.sigma_v() / self.v_m(self.z_min)]
-# 		exp = np.piecewise(z, condlist, funclist)
-# 		return exp
-# =============================================================================
+
 
 	def q_p(self, z):
 		exp = (1 + 7 * self.I_v(z)) * 0.5 * self.rho * self.v_m(z)**2
