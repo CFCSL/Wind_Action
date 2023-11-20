@@ -254,8 +254,8 @@ def c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_m
 # plt.title('Plot of c_e vs z')
 # plt.grid(True)  # Add a grid for better readability
 # plt.show()
+# 
 # =============================================================================
-
 #%%
 class Calculator:
 # =============================================================================
