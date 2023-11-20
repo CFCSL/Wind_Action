@@ -315,7 +315,7 @@ c_ez=c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_
 c_ez_values = [c_ez for z in z_values]
 
 # Plotting the results
-plt.plot( c_e_values,z_values)
+plt.plot( c_ez_values,z_values)
 plt.xlabel('$c_e(z)$')
 plt.ylabel('z')
 plt.title(f'''Plot of  $z$ vs $c_e(z)$''')
