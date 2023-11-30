@@ -281,7 +281,7 @@ class Calculator:
 # 		self.c_0 = c_0
 # =============================================================================
 		
-	def __init__(self,**params):
+	def __init__(self,params):
 		self.c_dir, self.c_season, self.v_b0, self.p, self.K, self.n, self.rho, \
 		self.z_max, self.z_0, self.z_min, self.z_0II, self.k_I, self.A_ref, \
 		self.c_d, self.c_f, self.c_0,self.c_pe,self.c_pi, self.c_fr, self.A_fr = params
