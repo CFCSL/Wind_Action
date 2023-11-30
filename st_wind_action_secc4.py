@@ -322,7 +322,7 @@ plt.title(f'''Plot of  $z$ vs $c_e(z)$''')
 
 # Display the plot in Streamlit
 st.pyplot()
-#showPyplotGlobalUse = False
+showPyplotGlobalUse = False
 
 #st.set_option('deprecation.showPyplotGlobalUse', False)
 
