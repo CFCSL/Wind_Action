@@ -329,7 +329,6 @@ st.pyplot(fig)
 
 
 st.markdown('---')
-st.markdown('---')
 st.header('**Section 5: Wind actionss**')
 
 
