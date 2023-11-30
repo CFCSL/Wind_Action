@@ -40,16 +40,19 @@ A_ref = symbols('A_ref')#800  # m2
 c_d = symbols('c_d')#1.00
 c_f = symbols('c_f')#1.55
 c_0 = symbols('c_0')#1.00
-v_b=symbols('v_b')
+v_b=symbols('v_b')#,cls=Function)(c_dir, c_season, v_b0)
 
 
 # Basic velocity pressure given in Expression (4.10):
 #v_b = c_dir * c_season * v_b0
-def v_b_func(c_dir=c_dir, c_season=c_season, v_b0=v_b0):
+#def v_b_func(c_dir=c_dir, c_season=c_season, v_b0=v_b0):
+def v_b_func(c_dir=c_dir, c_season=c_season, v_b0=v_b0,**kwargs):
 	c_dir=UnevaluatedExpr(c_dir)
 	c_season=UnevaluatedExpr(c_season)
 	v_b0=UnevaluatedExpr(v_b0)
-	return Eq(v_b, c_dir * c_season * v_b0, evaluate=False)
+	expr= c_dir * c_season * v_b0
+	expr=expr.subs(kwargs)
+	return Eq(v_b,expr)
 	
 	
 
@@ -278,13 +281,14 @@ class Calculator:
 # 		self.c_0 = c_0
 # =============================================================================
 		
-	def __init__(self, params):
+	def __init__(self,**params):
 		self.c_dir, self.c_season, self.v_b0, self.p, self.K, self.n, self.rho, \
 		self.z_max, self.z_0, self.z_min, self.z_0II, self.k_I, self.A_ref, \
 		self.c_d, self.c_f, self.c_0,self.c_pe,self.c_pi, self.c_fr, self.A_fr = params
 
 	def v_b(self):
 		exp = self.c_dir * self.c_season * self.v_b0
+		#exp=exp.subs(params)
 		return exp
 
 	def c_prob(self):
@@ -347,8 +351,6 @@ class Calculator:
 	def F_fr(self, z):
 		exp=c_fr*q_p(z)*A_fr
 		return exp
-
-
 
 #%%
 z_e, c_pe = symbols('z_e c_pe')
