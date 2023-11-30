@@ -14,6 +14,15 @@ init_printing()
 #st.set_option('browser.gatherUsageStats', False)
 
 
+user_agent = st.experimental_get_query_params().get("user_agent", [""])[0].lower()
+
+if "firefox" in user_agent:
+	st.warning("This app works best with Google Chrome. Some features may not be fully supported in Firefox.")
+elif "chrome" not in user_agent:
+	st.warning("This app is optimized for Google Chrome. Other browsers may not provide the best experience.")
+
+
+
 c_dir = st.sidebar.number_input('Direction coefficient $c_{dir}=$', value= 1.0, min_value=0.0, step=0.1, format="%.3f")#1.0
 c_season = st.sidebar.number_input('Season coeffition $c_{season} =$', value= 1.0, min_value=0.0, step=0.1, format="%.3f")#1.0
 v_b0 = st.sidebar.number_input('base velocity $v_{b0}[km/h] =$', value= 27.0, min_value=0.0, step=1.0, format="%.3f")#27.0  # km/h
