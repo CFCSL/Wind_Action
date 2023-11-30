@@ -14,12 +14,14 @@ init_printing()
 #st.set_option('browser.gatherUsageStats', False)
 
 
-user_agent = st.experimental_get_query_params().get("user_agent", [""])[0].lower()
+def is_firefox():
+    user_agent = st.experimental_get_query_params().get("user_agent", [""])[0].lower()
+    return "firefox" in user_agent
 
-if "firefox" in user_agent:
-	st.warning("This app works best with Google Chrome. Some features may not be fully supported in Firefox.")
-elif "chrome" not in user_agent:
-	st.warning("This app is optimized for Google Chrome. Other browsers may not provide the best experience.")
+if is_firefox():
+    st.warning("This app may not be fully optimized for Firefox, but you can still proceed.")
+else:
+    st.success("This app is optimized for Google Chrome.")
 
 
 
