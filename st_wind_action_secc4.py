@@ -314,17 +314,19 @@ z_values = np.linspace(0, 100, 1000)
 # Calculate c_e for each value of z
 c_ez_values = [c_ez(z) for z in z_values]
 
+# Create a Matplotlib figure and axis
+fig, ax = plt.subplots()
+
 # Plotting the results
-plt.plot( c_ez_values,z_values)
-plt.xlabel('$c_e(z)$')
-plt.ylabel('z')
-plt.title(f'''Plot of  $z$ vs $c_e(z)$''')
+ax.plot(c_ez_values, z_values)
+ax.set_xlabel('$c_e(z)$')
+ax.set_ylabel('z')
+ax.set_title('Plot of $z$ vs $c_e(z)$')
 
 # Display the plot in Streamlit
-st.pyplot()
-showPyplotGlobalUse = False
+st.pyplot(fig)
 
-#st.set_option('deprecation.showPyplotGlobalUse', False)
+
 
 st.markdown('---')
 st.markdown('---')
