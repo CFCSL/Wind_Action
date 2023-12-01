@@ -15,38 +15,38 @@ init_printing()
 
 
 def is_firefox():
-    user_agent = st.experimental_get_query_params().get("user_agent", [""])[0].lower()
-    return "firefox" in user_agent
+
+	user_agent = st.experimental_get_query_params().get("user_agent", [""])[0].lower()
+	return "firefox" in user_agent
 
 if is_firefox():
-    st.warning("This app may not be fully optimized for Firefox, but you can still proceed.")
+	st.warning("This app may not be fully optimized for Firefox, but you can still proceed.")
 else:
-    st.success("This app is optimized for Google Chrome.")
-
+	st.success("This app is optimized for Google Chrome.")
 
 
 c_dir = st.sidebar.number_input('Direction coefficient $c_{dir}=$', value= 1.0, min_value=0.0, step=0.1, format="%.3f")#1.0
 c_season = st.sidebar.number_input('Season coeffition $c_{season} =$', value= 1.0, min_value=0.0, step=0.1, format="%.3f")#1.0
 v_b0 = st.sidebar.number_input('base velocity $v_{b0}[km/h] =$', value= 27.0, min_value=0.0, step=1.0, format="%.3f")#27.0  # km/h
-p = st.sidebar.number_input('p =', value= 0.01, min_value=0.0, step=0.01, format="%.3f")#0.01
-K = st.sidebar.number_input('K=', value= 0.2, min_value=0.0, step=0.01, format="%.3f")#0.2
-n = st.sidebar.number_input('n =', value= 0.5, min_value=0.0, step=0.01, format="%.3f")#0.5
-rho = st.sidebar.number_input('Density of  air $\\rho [kg/m^3] =$', value= 1.25, min_value=0.0, step=0.01, format="%.3f")
-z_max = st.sidebar.number_input('Maximum height $z_{max} [m]$ =', value= 200.0, min_value=10.0, step=1.0, format="%.3f")#200.0  # m
+p = st.sidebar.number_input('Annual probability of exceedence $p =$', value= 0.02, min_value=0.0, step=0.01, format="%.3f")#0.01
+K = st.sidebar.number_input('The shape parameter $K=$', value= 0.2, min_value=0.0, step=0.1, format="%.3f")#0.2
+n = st.sidebar.number_input('The exponent $n =$', value= 0.5, min_value=0.0, step=0.1, format="%.3f")#0.5
+rho = st.sidebar.number_input('Density of  air $\\rho [kg/m^3] =$', value= 1.25, min_value=0.0, step=0.01, format="%.2f")
+z_max = st.sidebar.number_input('Maximum height $z_{max} [m]$ =', value= 200.0, min_value=10.0, step=1.0, format="%.2f")#200.0  # m
 z_0 = st.sidebar.number_input('Base height $z_{0} [m]$ =', value= 0.3, min_value=0.0, step=0.001, format="%.3f")#0.003  # m
 z_min = st.sidebar.number_input('Minimum height $z_{min} [m]$ =', value= 1.0, min_value=0.0, step=0.10, format="%.3f")#1.0  # m
-z_0II = st.sidebar.number_input('$z_{0II} [m]$ =', value= 0.005, min_value=0.0, step=0.001, format="%.3f")#symbols('z_0II')#0.005  # m
+z_0II = st.sidebar.number_input('$z_{0II} [m]$ =', value= 0.05, min_value=0.0, step=0.01, format="%.2f")#symbols('z_0II')#0.005  # m
 k_I = st.sidebar.number_input('$k_I=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")#1.00
-A_ref = st.sidebar.number_input('$A_{ref} [m^2]=$',value= 800.0, min_value=1.0, step=1., format="%.3f")#800  # m2
-c_s = st.sidebar.number_input('$c_s=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")#1.00
-c_d = st.sidebar.number_input('$c_d=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")#1.00
-c_f = st.sidebar.number_input('$c_f=$',value= 1.55, min_value=0.0, step=0.01, format="%.3f")#1.55
-c_0 = st.sidebar.number_input('$c_0=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")#1.00
+A_ref = st.sidebar.number_input('$A_{ref} [m^2]=$',value= 800.0, min_value=1.0, step=1., format="%.1f")#800  # m2
+c_s = st.sidebar.number_input('$c_s=$',value= 1.00, min_value=0.0, step=0.01, format="%.2f")#1.00
+c_d = st.sidebar.number_input('$c_d=$',value= 1.00, min_value=0.0, step=0.01, format="%.2f")#1.00
+c_f = st.sidebar.number_input('$c_f=$',value= 1.55, min_value=0.0, step=0.01, format="%.2f")#1.55
+c_0 = st.sidebar.number_input('$c_0=$',value= 1.00, min_value=0.0, step=0.01, format="%.2f")#1.00
 
-c_pe = st.sidebar.number_input('$c_{pe}=$',value= 2.00, min_value=0.0, step=0.01, format="%.3f")
+c_pe = st.sidebar.number_input('$c_{pe}=$',value= 2.00, min_value=0.0, step=0.01, format="%.2f")
 
-c_pi = st.sidebar.number_input('$c_{pi}=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")
-c_fr = st.sidebar.number_input('$c_{fr}=$',value= 10.00, min_value=0.0, step=0.01, format="%.3f")
+c_pi = st.sidebar.number_input('$c_{pi}=$',value= 1.00, min_value=0.0, step=0.01, format="%.2f")
+c_fr = st.sidebar.number_input('$c_{fr}=$',value= 10.00, min_value=0.0, step=0.01, format="%.2f")
 A_fr = st.sidebar.number_input('$A_{fr}=$',value= 500.00, min_value=0.0, step=1.0, format="%.2f")
 
 
