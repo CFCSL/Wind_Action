@@ -139,7 +139,7 @@ st.latex(latex(v_m2))
 
 v_m=N(v_m2.doit(),3)
 
-st.latex(latex(v_m)+f'(m/s^2)')
+st.latex(latex(v_m)+f'(m/s)')
 
 st.markdown(f"""
 
