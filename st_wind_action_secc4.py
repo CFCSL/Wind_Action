@@ -33,7 +33,7 @@ K = st.sidebar.number_input('The shape parameter $K=$', value= 0.2, min_value=0.
 n = st.sidebar.number_input('The exponent $n =$', value= 0.5, min_value=0.0, step=0.1, format="%.3f")#0.5
 rho = st.sidebar.number_input('Density of  air $\\rho [kg/m^3] =$', value= 1.25, min_value=0.0, step=0.01, format="%.2f")
 z_max = st.sidebar.number_input('Maximum height $z_{max} [m]$ =', value= 200.0, min_value=10.0, step=1.0, format="%.2f")#200.0  # m
-z_0 = st.sidebar.number_input('Base height $z_{0} [m]$ =', value= 0.3, min_value=0.0, step=0.001, format="%.3f")#0.003  # m
+z_0 = st.sidebar.number_input('Roughness length $z_{0} [m]$ =', value= 0.3, min_value=0.0, step=0.001, format="%.3f")#0.003  # m
 z_min = st.sidebar.number_input('Minimum height $z_{min} [m]$ =', value= 1.0, min_value=0.0, step=0.10, format="%.3f")#1.0  # m
 z_0II = st.sidebar.number_input('$z_{0II} [m]$ =', value= 0.05, min_value=0.0, step=0.01, format="%.2f")#symbols('z_0II')#0.005  # m
 k_I = st.sidebar.number_input('$k_I=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")#1.00
@@ -118,7 +118,7 @@ st.markdown('**4.3.1 Variation with height**')
 
 st.write('The mean wind velocity $v_m(z)$ at a height z above the terrain depends on the terrain roughness and orography and on the basic wind velocity, $v_b$, and should be determined using Expression (4.3)')
 
-z=st.number_input('$z=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")
+z=st.number_input('$z=$',value= 1.00, min_value=0.0, step=0.1, format="%.2f")
 
 
 k_r2=k_r_func(z_0=z_0,z_0II=z_0II)
