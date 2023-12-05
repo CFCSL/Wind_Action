@@ -14,43 +14,33 @@ init_printing()
 #st.set_option('browser.gatherUsageStats', False)
 
 
-def is_firefox():
+c_dir_val = st.sidebar.number_input('Direction coefficient $c_{dir}=$', value= 1.0, min_value=0.0, step=0.1, format="%.3f")#1.0
+c_season_val = st.sidebar.number_input('Season coeffition $c_{season} =$', value= 1.0, min_value=0.0, step=0.1, format="%.3f")#1.0
+v_b0_val = st.sidebar.number_input('base velocity $v_{b0}[km/h] =$', value= 27.0, min_value=0.0, step=1.0, format="%.3f")#27.0  # km/h
+p_val = st.sidebar.number_input('p =', value= 0.01, min_value=0.0, step=0.01, format="%.3f")#0.01
+K_val = st.sidebar.number_input('K=', value= 0.2, min_value=0.0, step=0.01, format="%.3f")#0.2
+n_val = st.sidebar.number_input('n =', value= 0.5, min_value=0.0, step=0.01, format="%.3f")#0.5
+rho_val = st.sidebar.number_input('Density of  air $\\rho [kg/m^3] =$', value= 1.25, min_value=0.0, step=0.01, format="%.3f")
+z_max_val = st.sidebar.number_input('Maximum height $z_{max} [m]$ =', value= 200.0, min_value=10.0, step=1.0, format="%.3f")#200.0  # m
+z_0_val = st.sidebar.number_input('Base height $z_{0} [m]$ =', value= 0.3, min_value=0.0, step=0.001, format="%.3f")#0.003  # m
+z_min_val = st.sidebar.number_input('Minimum height $z_{min} [m]$ =', value= 1.0, min_value=0.0, step=0.10, format="%.3f")#1.0  # m
+z_0II_val = st.sidebar.number_input('$z_{0II} [m]$ =', value= 0.005, min_value=0.0, step=0.001, format="%.3f")#symbols('z_0II')#0.005  # m
+k_I_val = st.sidebar.number_input('$k_I=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")#1.00
+A_ref_val = st.sidebar.number_input('$A_{ref} [m^2]=$',value= 800.0, min_value=1.0, step=1., format="%.3f")#800  # m2
+c_s_val = st.sidebar.number_input('$c_s=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")#1.00
+c_d_val = st.sidebar.number_input('$c_d=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")#1.00
+c_f_val = st.sidebar.number_input('$c_f=$',value= 1.55, min_value=0.0, step=0.01, format="%.3f")#1.55
+c_0_val = st.sidebar.number_input('$c_0=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")#1.00
 
-	user_agent = st.experimental_get_query_params().get("user_agent", [""])[0].lower()
-	return "firefox" in user_agent
+c_pe_val = st.sidebar.number_input('$c_{pe}=$',value= 2.00, min_value=0.0, step=0.01, format="%.3f")
 
-if is_firefox():
-	st.warning("This app may not be fully optimized for Firefox, but you can still proceed.")
-else:
-	st.success("This app is optimized for Google Chrome.")
-
-
-c_dir = st.sidebar.number_input('Direction coefficient $c_{dir}=$', value= 1.0, min_value=0.0, step=0.1, format="%.3f")#1.0
-c_season = st.sidebar.number_input('Season coeffition $c_{season} =$', value= 1.0, min_value=0.0, step=0.1, format="%.3f")#1.0
-v_b0 = st.sidebar.number_input('base velocity $v_{b0}[km/h] =$', value= 27.0, min_value=0.0, step=1.0, format="%.3f")#27.0  # km/h
-p = st.sidebar.number_input('Annual probability of exceedence $p =$', value= 0.02, min_value=0.0, step=0.01, format="%.3f")#0.01
-K = st.sidebar.number_input('The shape parameter $K=$', value= 0.2, min_value=0.0, step=0.1, format="%.3f")#0.2
-n = st.sidebar.number_input('The exponent $n =$', value= 0.5, min_value=0.0, step=0.1, format="%.3f")#0.5
-rho = st.sidebar.number_input('Density of  air $\\rho [kg/m^3] =$', value= 1.25, min_value=0.0, step=0.01, format="%.2f")
-z_max = st.sidebar.number_input('Maximum height $z_{max} [m]$ =', value= 200.0, min_value=10.0, step=1.0, format="%.2f")#200.0  # m
-z_0 = st.sidebar.number_input('Roughness length $z_{0} [m]$ =', value= 0.3, min_value=0.0, step=0.001, format="%.3f")#0.003  # m
-z_min = st.sidebar.number_input('Minimum height $z_{min} [m]$ =', value= 1.0, min_value=0.0, step=0.10, format="%.3f")#1.0  # m
-z_0II = st.sidebar.number_input('$z_{0II} [m]$ =', value= 0.05, min_value=0.0, step=0.01, format="%.2f")#symbols('z_0II')#0.005  # m
-k_I = st.sidebar.number_input('$k_I=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")#1.00
-A_ref = st.sidebar.number_input('$A_{ref} [m^2]=$',value= 800.0, min_value=1.0, step=1., format="%.1f")#800  # m2
-c_s = st.sidebar.number_input('$c_s=$',value= 1.00, min_value=0.0, step=0.01, format="%.2f")#1.00
-c_d = st.sidebar.number_input('$c_d=$',value= 1.00, min_value=0.0, step=0.01, format="%.2f")#1.00
-c_f = st.sidebar.number_input('$c_f=$',value= 1.55, min_value=0.0, step=0.01, format="%.2f")#1.55
-c_0 = st.sidebar.number_input('$c_0=$',value= 1.00, min_value=0.0, step=0.01, format="%.2f")#1.00
-
-c_pe = st.sidebar.number_input('$c_{pe}=$',value= 2.00, min_value=0.0, step=0.01, format="%.2f")
-
-c_pi = st.sidebar.number_input('$c_{pi}=$',value= 1.00, min_value=0.0, step=0.01, format="%.2f")
-c_fr = st.sidebar.number_input('$c_{fr}=$',value= 10.00, min_value=0.0, step=0.01, format="%.2f")
-A_fr = st.sidebar.number_input('$A_{fr}=$',value= 500.00, min_value=0.0, step=1.0, format="%.2f")
+c_pi_val = st.sidebar.number_input('$c_{pi}=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")
+c_fr_val = st.sidebar.number_input('$c_{fr}=$',value= 10.00, min_value=0.0, step=0.01, format="%.3f")
+A_fr_val = st.sidebar.number_input('$A_{fr}=$',value= 500.00, min_value=0.0, step=1.0, format="%.2f")
 
 
-
+db={'v_b0':v_b0_val,'c_season':c_season_val,'c_0':c_0_val,'c_dir':c_dir_val,'K':K_val,'n':n_val,'p':p_val,'z_0II':K_val,'z_max':z_max_val,
+   'z_0':z_0_val,'z_min':z_min_val}
 
 st.title('**Eurocode 1: Actions on structures - Part 1-4: General actions - Wind actions**')
 
@@ -69,13 +59,15 @@ v_b1 = v_b_func()
 st.latex(latex(v_b1))
 
 # Calculate v_b using v_b_func() with specific values and display in LaTeX format
-v_b2 = v_b_func(c_dir=c_dir, c_season=c_season, v_b0=v_b0)
+v_b2 = v_b_func(**db)
 st.latex(latex(v_b2))
 
 
 v_b = N(v_b2.doit(),3)
 
 st.latex(latex(v_b)+f"(m/s)")
+
+db['v_b'] = v_b.rhs
 
 st.markdown(f"""
 where: 
@@ -96,12 +88,16 @@ st.write('The 10 minutes mean wind velocity having the probability p:')
 c_prob1=c_prob_func()
 st.latex(latex(c_prob1))
 
-c_prob2=c_prob_func(K=K,p=p,n=n)
+c_prob2=c_prob_func(**db)
 
 st.latex(latex(c_prob2))
 
 c_prob=N(c_prob2.doit(),3)
 st.latex(latex(c_prob))
+db['c_prob'] = c_prob.rhs
+
+
+
 st.markdown(f"""
 where: 
 	
@@ -118,28 +114,54 @@ st.markdown('**4.3.1 Variation with height**')
 
 st.write('The mean wind velocity $v_m(z)$ at a height z above the terrain depends on the terrain roughness and orography and on the basic wind velocity, $v_b$, and should be determined using Expression (4.3)')
 
-z=st.number_input('$z=$',value= 1.00, min_value=0.0, step=0.1, format="%.2f")
+z_val=st.number_input('$z=$',value= 10.00, min_value=0.0, step=1., format="%.2f")
 
 
-k_r2=k_r_func(z_0=z_0,z_0II=z_0II)
+
+#k_r1=k_r_func()
+#st.latex(latex(k_r1))
+
+k_r2=k_r_func(**db)
+
+#st.latex(latex(k_r2))
 
 k_r=N(k_r2.doit(),3)
+st.latex(latex(k_r))
 
-c_r3=c_r_func(z=z, z_min=z_min, z_max=z_max, z_0=z_0, k_r=k_r.rhs,UE=False)
+db['k_r']=k_r.rhs
+
+#st.write(db['k_r'])
 
 
-c_r=N(c_r3.doit(),3)
+c_r1=c_r_func()
+st.latex(latex(c_r1))
+
+c_r2=c_r_func(**db)
+
+st.latex(latex(c_r2))
+
+
+c_r=N(c_r2.subs(z,z_val).doit(),3)
+
+st.latex(latex(c_r))
+
+#st.write(c_r.rhs)
+
+db['c_r']=c_r.rhs
+#st.write(db['c_r'])
 
 v_m1=v_m_func()
 st.latex(latex(v_m1))
 
-v_m2=v_m_func(z=z,c_r=c_r.rhs, c_0=c_0,v_b=v_b.rhs)
+v_m2=v_m_func(**db).subs(z, z_val)#.subs(db)
 
 st.latex(latex(v_m2))
 
 v_m=N(v_m2.doit(),3)
 
 st.latex(latex(v_m)+f'(m/s)')
+
+db['v_m']=v_m.rhs
 
 st.markdown(f"""
 
@@ -155,28 +177,35 @@ st.markdown('**4.3.2 Terrain roughness**')
 
 st.write('The roughness factor $c_r(z)$')
 
+#k_r1=k_r_func()
+#st.latex(latex(k_r1))
 
-k_r2=k_r_func(z_0=z_0,z_0II=z_0II)
+#k_r2=k_r_func(**db)
 
-k_r=N(k_r2.doit(),3)
+#st.latex(latex(k_r2))
 
+#k_r=N(k_r2.doit(),3)
+#st.latex(latex(k_r))
 
+#db['k_r']=k_r.rhs
 
-c_r1=c_r_func()
-st.latex(latex(c_r1))
+#st.write(db['k_r'])
 
-c_r2=c_r_func(z=z, z_min=z_min, z_max=z_max, z_0=z_0, k_r=k_r.rhs,UE=True)
-
-st.latex(latex(c_r2))
-
-c_r3=c_r_func(z=z, z_min=z_min, z_max=z_max, z_0=z_0, k_r=k_r.rhs,UE=False)
-
-st.latex(latex(c_r3))
-
-c_r=N(c_r2.doit(),3)
-
-st.latex(latex(c_r))
-
+# =============================================================================
+# 
+# c_r1=c_r_func()
+# st.latex(latex(c_r1))
+# 
+# c_r2=c_r_func(**db)
+# 
+# st.latex(latex(c_r2))
+# 
+# 
+# c_r=N(c_r2.subs(z,z_val).doit(),3)
+# 
+# st.latex(latex(c_r))
+# 
+# =============================================================================
 st.markdown(f"""
 
 where:
@@ -188,15 +217,17 @@ $z_0$ is the roughness length
 
 st.write('Terrain factor depending on the roughness length $z_0$')
 
-k_r1=k_r_func()
-st.latex(latex(k_r1))
-
-k_r2=k_r_func(z_0=z_0,z_0II=z_0II)
-
-st.latex(latex(k_r2))
-
-k_r=N(k_r2.doit(),3)
-st.latex(latex(k_r))
+# =============================================================================
+# k_r1=k_r_func()
+# st.latex(latex(k_r1))
+# 
+# k_r2=k_r_func().subs(db)
+# 
+# st.latex(latex(k_r2))
+# 
+# k_r=N(k_r2.doit(),3)
+# st.latex(latex(k_r))
+# =============================================================================
 
 st.markdown(f"""
 
@@ -228,7 +259,7 @@ st.write('The turbulent component of wind velocity has a mean value of $0$ and a
 sigma_v1=sigma_v_func()
 st.latex(latex(sigma_v1))
 
-sigma_v2=sigma_v_func(k_r=k_r.rhs, v_b=v_b.rhs, k_I=k_I)
+sigma_v2=sigma_v_func().subs(db)
 
 st.latex(latex(sigma_v2))
 
@@ -325,20 +356,19 @@ z_values = np.linspace(0, 100, 1000)
 # Calculate c_e for each value of z
 c_ez_values = [c_ez(z) for z in z_values]
 
-# Create a Matplotlib figure and axis
-fig, ax = plt.subplots()
-
 # Plotting the results
-ax.plot(c_ez_values, z_values)
-ax.set_xlabel('$c_e(z)$')
-ax.set_ylabel('z')
-ax.set_title('Plot of $z$ vs $c_e(z)$')
+plt.plot( c_ez_values,z_values)
+plt.xlabel('$c_e(z)$')
+plt.ylabel('z')
+plt.title(f'''Plot of  $z$ vs $c_e(z)$''')
 
 # Display the plot in Streamlit
-st.pyplot(fig)
+st.pyplot()
+#showPyplotGlobalUse = False
 
+#st.set_option('deprecation.showPyplotGlobalUse', False)
 
-
+st.markdown('---')
 st.markdown('---')
 st.header('**Section 5: Wind actionss**')
 
@@ -524,4 +554,3 @@ $B_2$ is the background factor, allowing for the lack of full correlation of the
 
 $R_2$ is the resonance response factor, allowing for turbulence in resonance with the vibration mode
 """)
-
