@@ -40,7 +40,7 @@ A_fr_val = st.sidebar.number_input('$A_{fr}=$',value= 500.00, min_value=0.0, ste
 
 
 db={'v_b0':v_b0_val,'c_season':c_season_val,'c_0':c_0_val,'c_dir':c_dir_val,'K':K_val,'n':n_val,'p':p_val,'z_0II':K_val,'z_max':z_max_val,
-   'z_0':z_0_val,'z_min':z_min_val}
+   'z_0':z_0_val,'z_min':z_min_val, 'k_I': k_I_val, 'rho': rho_val }
 
 st.title('**Eurocode 1: Actions on structures - Part 1-4: General actions - Wind actions**')
 
@@ -126,7 +126,7 @@ k_r2=k_r_func(**db)
 #st.latex(latex(k_r2))
 
 k_r=N(k_r2.doit(),3)
-st.latex(latex(k_r))
+#st.latex(latex(k_r))
 
 db['k_r']=k_r.rhs
 
@@ -134,16 +134,16 @@ db['k_r']=k_r.rhs
 
 
 c_r1=c_r_func()
-st.latex(latex(c_r1))
+#st.latex(latex(c_r1))
 
 c_r2=c_r_func(**db)
 
-st.latex(latex(c_r2))
+#st.latex(latex(c_r2))
 
 
 c_r=N(c_r2.subs(z,z_val).doit(),3)
 
-st.latex(latex(c_r))
+#st.latex(latex(c_r))
 
 #st.write(c_r.rhs)
 
@@ -177,35 +177,27 @@ st.markdown('**4.3.2 Terrain roughness**')
 
 st.write('The roughness factor $c_r(z)$')
 
-#k_r1=k_r_func()
-#st.latex(latex(k_r1))
 
-#k_r2=k_r_func(**db)
+#c_r1=c_r_func()
+st.latex(latex(c_r_func()))
 
-#st.latex(latex(k_r2))
+del db['c_r']
 
-#k_r=N(k_r2.doit(),3)
-#st.latex(latex(k_r))
+c_r2=c_r_func(**db)
 
-#db['k_r']=k_r.rhs
+st.latex(latex(c_r2))
 
-#st.write(db['k_r'])
 
-# =============================================================================
-# 
-# c_r1=c_r_func()
-# st.latex(latex(c_r1))
-# 
-# c_r2=c_r_func(**db)
-# 
-# st.latex(latex(c_r2))
-# 
-# 
-# c_r=N(c_r2.subs(z,z_val).doit(),3)
-# 
-# st.latex(latex(c_r))
-# 
-# =============================================================================
+c_r3=N(c_r2.subs(z,z_val).doit(),3)
+
+st.latex(latex(c_r3))
+
+
+
+db['c_r']=c_r.rhs
+
+
+
 st.markdown(f"""
 
 where:
@@ -217,17 +209,17 @@ $z_0$ is the roughness length
 
 st.write('Terrain factor depending on the roughness length $z_0$')
 
-# =============================================================================
-# k_r1=k_r_func()
-# st.latex(latex(k_r1))
-# 
-# k_r2=k_r_func().subs(db)
-# 
-# st.latex(latex(k_r2))
-# 
-# k_r=N(k_r2.doit(),3)
-# st.latex(latex(k_r))
-# =============================================================================
+k_r1=k_r_func()
+st.latex(latex(k_r1))
+del db['k_r']
+k_r2=k_r_func(**db)
+
+st.latex(latex(k_r2))
+
+k_r=N(k_r2.doit(),3)
+st.latex(latex(k_r))
+
+db['k_r']=k_r.rhs
 
 st.markdown(f"""
 
@@ -259,13 +251,13 @@ st.write('The turbulent component of wind velocity has a mean value of $0$ and a
 sigma_v1=sigma_v_func()
 st.latex(latex(sigma_v1))
 
-sigma_v2=sigma_v_func().subs(db)
+sigma_v2=sigma_v_func(**db)
 
 st.latex(latex(sigma_v2))
 
 sigma_v=N(sigma_v2.doit(),3)
 st.latex(latex(sigma_v))
-
+db['sigma_v']=sigma_v.rhs
 
 st.markdown('---')
 st.write(' The turbulence intensity $I_v$ at height $z$ is defined as')
@@ -273,12 +265,12 @@ st.write(' The turbulence intensity $I_v$ at height $z$ is defined as')
 I_v1=I_v_func()
 st.latex(latex(I_v1))
 
-I_v =I_v_func(z=z,z_min=z_min, z_max=z_max, z_0=z_0, sigma_v=sigma_v.rhs, v_m=v_m.rhs, UE=False)
+I_v2 =I_v_func(**db)
 
-#st.latex(latex(I_v2))
-
+st.latex(latex(I_v2))
+I_v =N(I_v2.doit(),3).subs(z, z_val)
 st.latex(latex(I_v))
-
+db['I_v']=I_v.rhs
 
 st.markdown(f"""
 
@@ -297,22 +289,26 @@ st.markdown('---')
 
 st.markdown('**4.5 Peak velocity pressure**')
 
-st.write("The peak velocity pressure q $q_p(z)$")
-
-q_b2=q_b_func(rho=rho, v_b=v_b.rhs)
-
-q_b=N(q_b2.doit(),3)
+st.write("The peak velocity pressure $q_p(z)$")
 
 q_p1=q_p_func()
 st.latex(latex(q_p1))
 
-q_p2=q_p_func(z=z, I_v=I_v.rhs, rho=rho, v_m=v_m.rhs)
+q_p2=q_p_func(**db).subs(z,z_val)
 
 st.latex(latex(q_p2))
 
 q_p=N(q_p2.doit(),3)
 
-st.latex(latex(q_p))
+st.latex(latex(q_p)+f' (kg/m^2)')
+
+db['q_p']=q_p.rhs
+
+
+
+q_b=N(q_b_func(**db).doit(),3)
+
+db['q_b']=q_b.rhs
 
 st.markdown(f"""
 
@@ -328,27 +324,29 @@ $c_e(z)$ is the exposure factor given in Expression (4.9)
 c_e1=c_e_func()
 st.latex(latex(c_e1))
 
-c_e2=c_e_func(z=z,q_p=q_p.rhs, q_b=q_b.rhs)
+#del db['q_b']
+c_e2=c_e_func(**db).subs(z,z_val)
 
 st.latex(latex(c_e2))
 
 c_e=N(c_e2.doit(),3)
 
 st.latex(latex(c_e))
+db['c_e']=c_e.rhs
 
 st.markdown('$q_b$ is the basic velocity pressure given in Expression (4.10)')
 
 q_b1=q_b_func()
 st.latex(latex(q_b1))
-
-q_b2=q_b_func(rho=rho, v_b=v_b.rhs)
+del db['q_b']
+q_b2=q_b_func(**db)
 
 st.latex(latex(q_b2))
 
 q_b=N(q_b2.doit(),3)
-st.latex(latex(q_b))
+st.latex(latex(q_b)+f'(kg/m^2)')
 
-
+db['q_b']=q_b.rhs
 
 # Generate 1000 points linearly spaced between 0 and 100
 z_values = np.linspace(0, 100, 1000)

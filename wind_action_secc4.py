@@ -105,9 +105,19 @@ def k_r_func(**kwargs):
 
 def q_b_func(**kwargs):
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
-	
-	expr= 0.5 * rho * v_b ** 2  # Fixed operator and added 0.5
+	expr= 0.5 * rho * v_b ** 2
 	_eq=Eq(q_b,expr)
+	_eq=_eq.subs(kwargs)
+	return _eq
+
+
+
+
+
+def q_p_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+	expr=(1+7*I_v)*(1/2)*rho*v_m**2   # Fixed operator and added 0.5
+	_eq=Eq(q_p,expr)
 	_eq=_eq.subs(kwargs)
 	return _eq
 
@@ -145,14 +155,14 @@ def I_v_func(**kwargs):
 	funclist = [sigma_v / v_m,  sigma_v / v_m.subs(z, z_min)]
 	#funclist = [k_I/(c_0*log(z/z_0)),k_I/(c_0*log(z_min/z_0)) ]
 	expr = Piecewise(*zip(funclist, condlist))
-	_eq=Eq(k_r,expr)
+	_eq=Eq(I_v,expr)
 	_eq=_eq.subs(kwargs)
 	return _eq
 
 def c_e_func(**kwargs):
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	expr = q_p / q_b
-	_eq=Eq(k_r,expr)
+	_eq=Eq(c_e,expr)
 	_eq=_eq.subs(kwargs)
 	return _eq
 
