@@ -97,7 +97,6 @@ st.latex(latex(c_prob))
 db['c_prob'] = c_prob.rhs
 
 
-
 st.markdown(f"""
 where: 
 	
@@ -117,52 +116,35 @@ st.write('The mean wind velocity $v_m(z)$ at a height z above the terrain depend
 z_val=st.number_input('$z=$',value= 10.00, min_value=0.0, step=1., format="%.2f")
 
 
-
-#k_r1=k_r_func()
-#st.latex(latex(k_r1))
-
 k_r2=k_r_func(**db)
 
-#st.latex(latex(k_r2))
-
 k_r=N(k_r2.doit(),3)
-#st.latex(latex(k_r))
 
 db['k_r']=k_r.rhs
 
-#st.write(db['k_r'])
-
-
 c_r1=c_r_func()
-#st.latex(latex(c_r1))
 
-c_r2=c_r_func(**db)
-
-#st.latex(latex(c_r2))
-
-
+c_r2=N(c_r_func(**db).doit(),3)
 c_r=N(c_r2.subs(z,z_val).doit(),3)
 
-#st.latex(latex(c_r))
-
-#st.write(c_r.rhs)
-
 db['c_r']=c_r.rhs
-#st.write(db['c_r'])
 
-v_m1=v_m_func()
-st.latex(latex(v_m1))
+st.latex(latex(v_m_func()))
 
-v_m2=v_m_func(**db).subs(z, z_val)#.subs(db)
+v_m=v_m_func(**db)
+#st.latex(latex(v_m))
+st.latex(latex(v_m.subs(z,z_val)))
+st.latex(latex(N(v_m.subs(z,z_val).doit(),3))+f'(m/s)')
 
-st.latex(latex(v_m2))
 
-v_m=N(v_m2.doit(),3)
-
-st.latex(latex(v_m)+f'(m/s)')
+db['c_r']=c_r2.rhs
+v_m=v_m_func(**db)
 
 db['v_m']=v_m.rhs
 
+
+
+#st.write(db)
 st.markdown(f"""
 
 where: 
@@ -188,15 +170,15 @@ c_r2=c_r_func(**db)
 st.latex(latex(c_r2))
 
 
+c_r3=N(c_r2.doit(),3)
+
+#st.latex(latex(c_r3))
 c_r3=N(c_r2.subs(z,z_val).doit(),3)
 
 st.latex(latex(c_r3))
 
-
-
-db['c_r']=c_r.rhs
-
-
+db['c_r']=c_r2.rhs
+#st.write(db)
 
 st.markdown(f"""
 
@@ -220,6 +202,8 @@ k_r=N(k_r2.doit(),3)
 st.latex(latex(k_r))
 
 db['k_r']=k_r.rhs
+
+#st.write(db)
 
 st.markdown(f"""
 
@@ -257,7 +241,12 @@ st.latex(latex(sigma_v2))
 
 sigma_v=N(sigma_v2.doit(),3)
 st.latex(latex(sigma_v))
-db['sigma_v']=sigma_v.rhs
+db['sigma_v']=N(sigma_v2.doit(),3).rhs
+
+
+#st.write(db)
+
+
 
 st.markdown('---')
 st.write(' The turbulence intensity $I_v$ at height $z$ is defined as')
@@ -268,9 +257,11 @@ st.latex(latex(I_v1))
 I_v2 =I_v_func(**db)
 
 st.latex(latex(I_v2))
-I_v =N(I_v2.doit(),3).subs(z, z_val)
+I_v =N(I_v2.subs(z, z_val).doit(),3)
 st.latex(latex(I_v))
-db['I_v']=I_v.rhs
+db['I_v']=I_v2.rhs
+
+#st.write(db)
 
 st.markdown(f"""
 
@@ -294,21 +285,19 @@ st.write("The peak velocity pressure $q_p(z)$")
 q_p1=q_p_func()
 st.latex(latex(q_p1))
 
-q_p2=q_p_func(**db).subs(z,z_val)
+q_p2=q_p_func(**db)
 
-st.latex(latex(q_p2))
+q_p3=q_p2.subs(z,z_val)
 
-q_p=N(q_p2.doit(),3)
+#st.latex(latex(q_p3))
+
+q_p=N(q_p3.doit(),3)
 
 st.latex(latex(q_p)+f' (kg/m^2)')
 
 db['q_p']=q_p.rhs
 
-
-
-q_b=N(q_b_func(**db).doit(),3)
-
-db['q_b']=q_b.rhs
+#st.write(db)
 
 st.markdown(f"""
 
@@ -320,20 +309,33 @@ expected in the region during wind storms
 $c_e(z)$ is the exposure factor given in Expression (4.9) 
 
 """)
+q_b2=q_b_func(**db)
+
+
+
+q_b=N(q_b2.doit(),3)
+
+
+db['q_b']=q_b.rhs
+
+
 
 c_e1=c_e_func()
 st.latex(latex(c_e1))
 
 #del db['q_b']
-c_e2=c_e_func(**db).subs(z,z_val)
-
-st.latex(latex(c_e2))
+c_e2=c_e_func(**db)
+c_e3=c_e2.subs(z,z_val)
+st.latex(latex(c_e3))
 
 c_e=N(c_e2.doit(),3)
 
 st.latex(latex(c_e))
-db['c_e']=c_e.rhs
+db['q_p']=q_p2.rhs
+c_e2=c_e_func(**db)
+db['c_e']=c_e2.rhs
 
+#st.write(db)
 st.markdown('$q_b$ is the basic velocity pressure given in Expression (4.10)')
 
 q_b1=q_b_func()
@@ -347,208 +349,204 @@ q_b=N(q_b2.doit(),3)
 st.latex(latex(q_b)+f'(kg/m^2)')
 
 db['q_b']=q_b.rhs
+#st.write(db)
+# Generate N points linearly spaced between 0 and 100
+N=1000
+z_values = np.linspace(0, 100, N)
 
-# Generate 1000 points linearly spaced between 0 and 100
-z_values = np.linspace(0, 100, 1000)
-#c_ez=c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_max,z_0=z_0,z_min=z_min,z_0II=z_0II, k_I=k_I, A_ref=A_ref, c_d=c_d, c_f=c_f,c_0=c_0)
-# Calculate c_e for each value of z
-c_ez_values = [c_ez(z) for z in z_values]
 
+c_e_values=[db['c_e'].subs(z,z_val).doit() for z_val in z_values]
 # Plotting the results
-plt.plot( c_ez_values,z_values)
-plt.xlabel('$c_e(z)$')
-plt.ylabel('z')
-plt.title(f'''Plot of  $z$ vs $c_e(z)$''')
+fig, ax = plt.subplots()
+ax.plot(c_e_values, z_values)
+ax.set_xlabel('$c_e(z)$')
+ax.set_ylabel('z')
+ax.set_title('Plot of $z$ vs $c_e(z)$')
 
 # Display the plot in Streamlit
-st.pyplot()
-#showPyplotGlobalUse = False
-
-#st.set_option('deprecation.showPyplotGlobalUse', False)
-
-st.markdown('---')
-st.markdown('---')
-st.header('**Section 5: Wind actionss**')
+st.pyplot(fig)
 
 
-params_list=[c_dir, c_season, v_b0, p, K, n, rho,
-		 z_max, z_0, z_min, z_0II, k_I, A_ref,
-		 c_d, c_f, c_0, c_pe, c_pi, c_fr, A_fr]
-
-calculator = Calculator(params_list)
-
-st.markdown(f'**5.1 General**')
-
-st.markdown(f'**5.2 Wind pressure on surfaces**')
-
-st.markdown(f"""
-			**(1) The wind pressure acting on the external surfaces, $W_e$ , should be obtained from Expression (5.1).**
-			""")
-z_e= st.number_input('The reference height for the external pressure $z_e$', value= 10.0, min_value=0.0, step=0.1, format="%.2f")
-#c_pe= st.number_input('The pressure coefficient for the external pressure $c_{pe}$', value= 1.0, min_value=0.0, step=0.1, format="%.2f")
-
-W_e1=W_e_func()
-st.latex(latex(W_e1))
-
-W_e2=W_e_func(z_e=z_e,q_p=N(calculator.q_p(z_e),3), c_pe=c_pe)
-st.latex(latex(W_e2))
-
-W_e=N(W_e2.doit(),3)
-st.latex(latex(W_e))
-
-st.markdown(f"""
-where: 
-	
-$q_p(z_e)$ is the peak velocity pressure 
-
-$z_e$ is the reference height for the external pressure given in Section 7 
-
-$c_{{pe}}$ is the pressure coefficient for the external pressure, see Section 7.
-
-""")
-
-
-st.markdown(f"""
-			**(2) The wind pressure acting on the internal surfaces of a structure, $W_i$, should be obtained from Expression (5.2).**
-			""")
-			
-z_i= st.number_input('The  reference height for the internal pressure $z_i$', value= 5.0, min_value=0.0, step=0.1, format="%.2f")
-#c_pi= st.number_input('The  pressure coefficient for the internal pressure $c_{pi}$', value= 1.0, min_value=0.0, step=0.1, format="%.2f")
-
-W_i1=W_i_func()
-st.latex(latex(W_i1))
-
-W_i2=W_i_func(z_i=z_i,q_p=N(calculator.q_p(z_i),3), c_p_i=c_pi)
-st.latex(latex(W_i2))
-
-W_i=N(W_i2.doit(),3)
-st.latex(latex(W_i))
-
-st.markdown(f"""
-where: 
-	
-$q_p(z_i)$ is the peak velocity pressure 
-
-$z_i$ is the reference height for the internal pressure given in Section 7 
-
-$c_{{pi}}$ is the pressure coefficient for the internal pressure given in Section 7
-
-""")
-
-st.markdown(f"""
-**(3) The net pressure on a wall, roof or element is the difference between the pressures on the 
-opposite surfaces taking due account of their signs. Pressure, directed towards the surface is taken as 
-positive, and suction, directed away from the surface as negative. Examples are given in Figure 5.1.**
-			""")
-
-st.markdown('---')
-
-st.markdown('**5.3 Wind forces**')
-
-st.markdown(f"""
-**(2) The wind force $F_w$ acting on a structure or a structural component may be determined directly by 
-using Expression (5.3)**
-""")
-F_w1=F_w_func()
-st.latex(latex(F_w1))
-
-F_w1=F_w_func(z_e=z_e,c_s=c_s, c_d=c_d,c_f=c_f,q_p=N(calculator.q_p(z_e),3),A_ref=A_ref)
-st.latex(latex(F_w1))
-
-F_w=N(F_w1.doit(),3)
-st.latex(latex(F_w))
-
-st.markdown(f"""**(3)Friction forces, $F_{{fr}}$:**""")
-
-F_fr1=F_fr_func()
-st.latex(latex(F_fr1))
-
-F_fr2=F_fr_func(z_e=z_e,c_fr=c_fr,q_p=N(calculator.q_p(z_e),3),A_fr=A_fr)
-st.latex(latex(F_fr2))
-
-F_fr=N(F_fr2.doit(),3)
-st.latex(latex(F_fr))
-
-st.markdown('---')
-st.markdown('---')
-
-st.header('**Section 6: Structural factor $c_sc_d$**')
-
-st.markdown('**6.1 General**')
-
-st.markdown(f"""
-			(1) The structural factor cscd should take into account the effect on wind actions from the non- simultaneous occurrence of peak wind pressures on the surface ($c_s$) together with the effect of the vibrations of the structure due to turbulence ($c_d$).
-""")
-
-st.markdown('**6.2 Determination of $c_sc_d$**')
-
-st.markdown(f"""
-(1) $c_sc_d$ may be determined as follows:
-	
-a) For buildings with a height less than $15 m$ the value of $c_sc_d$ may be taken as $1$.
-	
-b) For facade and roof elements having a natural frequency greater than $5 Hz$, the value of $c_sc_d$ may be taken as $1$.
-	
-c) For framed buildings which have structural walls and which are less than $100 m$ high and whose height is less than $4$ times the in-wind depth, the value of cscd may be taken as $1$.
-	
-d) For chimneys with circular cross-sections whose height is less than $60 m$ and $6,5$ times the diameter, the value of $c_sc_d$ may be taken as $1$.
-	
-e) Alternatively, for cases a), b), c) and d) above, values of cscd may be derived from 6.3.1.
-	
-f) For civil engineering works (other than bridges, which are considered in Section 8), and chimneys and buildings outside the limitations given in c) and d) above, $c_sc_d$ should be derived either from 6.3 or taken from Annex D.
-""")
-
-st.markdown('**6.3 Detailed procedure**')
-
-st.markdown('**6.3.1 Structural factor $c_sc_d$**')
-
-B=st.number_input('B=', value=20.0, step=1.0, min_value=0.0, format="%.2f")
-R=st.number_input('R=', value=10.0, step=1.0, min_value=0.0, format="%.2f")
-z_s=st.number_input('$z_s$=', value=5.0, step=1.0, min_value=0.0, format="%.2f")
-k_p=st.number_input('$k_p$=', value=0.5, step=0.1, min_value=0.0, format="%.2f")
-
-
-st.markdown('NOTE 1 The size factor $c_s$ takes into account the reduction effect on the wind action due to the non- simultaneity of occurrence of the peak wind pressures on the surface and may be obtained from Expression (6.2):')
-c_s1=c_s_func()
-st.latex(latex(c_s1))
-c_s2=c_s_func(z_s=z_s, k_p=k_p, I_v=N(calculator.I_v(z_s),3), B=B, R=R)
-st.latex(latex(c_s2))
-c_s=N(c_s2.doit(),2)
-st.latex(latex(c_s))
-
-
-
-
-st.markdown(f"""(6.2) NOTE 2 The dynamic factor $c_d$ takes into account the increasing effect from vibrations due to turbulence
-in resonance with the structure and may be obtained from Expression (6.3):""")
-
-c_d1=c_d_func()
-st.latex(latex(c_d1))
-c_d2=c_d_func(z_s=z_s, k_p=k_p, I_v=N(calculator.I_v(z_s),3), B=B, R=R)
-st.latex(latex(c_d2))
-c_d=N(c_d2.doit(),2)
-st.latex(latex(c_d))
-
-st.markdown(f"""
-(1) The detailed procedure for calculating the structural factor $c_sc_d$ is given in Expression (6.1). This procedure can only be used if the conditions given in 6.3.1 (2) apply.
-""")
-c_sd1=c_sd_func()
-st.latex(latex(c_sd1))
-c_sd2=c_sd_func(z_s=z_s, k_p=k_p, I_v=N(calculator.I_v(z_s),3), B=B, R=R)
-st.latex(latex(c_sd2))
-c_sd=N(c_sd2.doit(),2)
-st.latex(latex(c_sd))
-
-st.markdown(f"""
-(6.1) where:
-	
-$z_s$ is the reference height for determining the structural factor, see Figure 6.1. For structures where Figure 6.1 does not apply $z_s$ may be set equal to $h$, the height of the structure.
-
-$k_p$ is the peak factor defined as the ratio of the maximum value of the fluctuating part of the response to its standard deviation
-
-$I_v$ is the turbulence intensity defined in 4.4
-
-$B_2$ is the background factor, allowing for the lack of full correlation of the pressure on the structure surface
-
-$R_2$ is the resonance response factor, allowing for turbulence in resonance with the vibration mode
-""")
+# =============================================================================
+# 
+# 
+# st.markdown('---')
+# st.markdown('---')
+# st.header('**Section 5: Wind actionss**')
+# 
+# st.markdown(f'**5.1 General**')
+# 
+# st.markdown(f'**5.2 Wind pressure on surfaces**')
+# 
+# st.markdown(f"""
+# 			**(1) The wind pressure acting on the external surfaces, $W_e$ , should be obtained from Expression (5.1).**
+# 			""")
+# z_e= st.number_input('The reference height for the external pressure $z_e$', value= 10.0, min_value=0.0, step=0.1, format="%.2f")
+# #c_pe= st.number_input('The pressure coefficient for the external pressure $c_{pe}$', value= 1.0, min_value=0.0, step=0.1, format="%.2f")
+# 
+# W_e1=W_e_func()
+# st.latex(latex(W_e1))
+# 
+# W_e2=W_e_func(z_e=z_e,q_p=N(calculator.q_p(z_e),3), c_pe=c_pe)
+# st.latex(latex(W_e2))
+# 
+# W_e=N(W_e2.doit(),3)
+# st.latex(latex(W_e))
+# 
+# st.markdown(f"""
+# where: 
+# 	
+# $q_p(z_e)$ is the peak velocity pressure 
+# 
+# $z_e$ is the reference height for the external pressure given in Section 7 
+# 
+# $c_{{pe}}$ is the pressure coefficient for the external pressure, see Section 7.
+# 
+# """)
+# 
+# 
+# st.markdown(f"""
+# 			**(2) The wind pressure acting on the internal surfaces of a structure, $W_i$, should be obtained from Expression (5.2).**
+# 			""")
+# 			
+# z_i= st.number_input('The  reference height for the internal pressure $z_i$', value= 5.0, min_value=0.0, step=0.1, format="%.2f")
+# #c_pi= st.number_input('The  pressure coefficient for the internal pressure $c_{pi}$', value= 1.0, min_value=0.0, step=0.1, format="%.2f")
+# 
+# W_i1=W_i_func()
+# st.latex(latex(W_i1))
+# 
+# W_i2=W_i_func(z_i=z_i,q_p=N(calculator.q_p(z_i),3), c_p_i=c_pi)
+# st.latex(latex(W_i2))
+# 
+# W_i=N(W_i2.doit(),3)
+# st.latex(latex(W_i))
+# 
+# st.markdown(f"""
+# where: 
+# 	
+# $q_p(z_i)$ is the peak velocity pressure 
+# 
+# $z_i$ is the reference height for the internal pressure given in Section 7 
+# 
+# $c_{{pi}}$ is the pressure coefficient for the internal pressure given in Section 7
+# 
+# """)
+# 
+# st.markdown(f"""
+# **(3) The net pressure on a wall, roof or element is the difference between the pressures on the 
+# opposite surfaces taking due account of their signs. Pressure, directed towards the surface is taken as 
+# positive, and suction, directed away from the surface as negative. Examples are given in Figure 5.1.**
+# 			""")
+# 
+# st.markdown('---')
+# 
+# st.markdown('**5.3 Wind forces**')
+# 
+# st.markdown(f"""
+# **(2) The wind force $F_w$ acting on a structure or a structural component may be determined directly by 
+# using Expression (5.3)**
+# """)
+# F_w1=F_w_func()
+# st.latex(latex(F_w1))
+# 
+# F_w1=F_w_func(z_e=z_e,c_s=c_s, c_d=c_d,c_f=c_f,q_p=N(calculator.q_p(z_e),3),A_ref=A_ref)
+# st.latex(latex(F_w1))
+# 
+# F_w=N(F_w1.doit(),3)
+# st.latex(latex(F_w))
+# 
+# st.markdown(f"""**(3)Friction forces, $F_{{fr}}$:**""")
+# 
+# F_fr1=F_fr_func()
+# st.latex(latex(F_fr1))
+# 
+# F_fr2=F_fr_func(z_e=z_e,c_fr=c_fr,q_p=N(calculator.q_p(z_e),3),A_fr=A_fr)
+# st.latex(latex(F_fr2))
+# 
+# F_fr=N(F_fr2.doit(),3)
+# st.latex(latex(F_fr))
+# 
+# st.markdown('---')
+# st.markdown('---')
+# 
+# st.header('**Section 6: Structural factor $c_sc_d$**')
+# 
+# st.markdown('**6.1 General**')
+# 
+# st.markdown(f"""
+# 			(1) The structural factor cscd should take into account the effect on wind actions from the non- simultaneous occurrence of peak wind pressures on the surface ($c_s$) together with the effect of the vibrations of the structure due to turbulence ($c_d$).
+# """)
+# 
+# st.markdown('**6.2 Determination of $c_sc_d$**')
+# 
+# st.markdown(f"""
+# (1) $c_sc_d$ may be determined as follows:
+# 	
+# a) For buildings with a height less than $15 m$ the value of $c_sc_d$ may be taken as $1$.
+# 	
+# b) For facade and roof elements having a natural frequency greater than $5 Hz$, the value of $c_sc_d$ may be taken as $1$.
+# 	
+# c) For framed buildings which have structural walls and which are less than $100 m$ high and whose height is less than $4$ times the in-wind depth, the value of cscd may be taken as $1$.
+# 	
+# d) For chimneys with circular cross-sections whose height is less than $60 m$ and $6,5$ times the diameter, the value of $c_sc_d$ may be taken as $1$.
+# 	
+# e) Alternatively, for cases a), b), c) and d) above, values of cscd may be derived from 6.3.1.
+# 	
+# f) For civil engineering works (other than bridges, which are considered in Section 8), and chimneys and buildings outside the limitations given in c) and d) above, $c_sc_d$ should be derived either from 6.3 or taken from Annex D.
+# """)
+# 
+# st.markdown('**6.3 Detailed procedure**')
+# 
+# st.markdown('**6.3.1 Structural factor $c_sc_d$**')
+# 
+# B=st.number_input('B=', value=20.0, step=1.0, min_value=0.0, format="%.2f")
+# R=st.number_input('R=', value=10.0, step=1.0, min_value=0.0, format="%.2f")
+# z_s=st.number_input('$z_s$=', value=5.0, step=1.0, min_value=0.0, format="%.2f")
+# k_p=st.number_input('$k_p$=', value=0.5, step=0.1, min_value=0.0, format="%.2f")
+# 
+# 
+# st.markdown('NOTE 1 The size factor $c_s$ takes into account the reduction effect on the wind action due to the non- simultaneity of occurrence of the peak wind pressures on the surface and may be obtained from Expression (6.2):')
+# c_s1=c_s_func()
+# st.latex(latex(c_s1))
+# c_s2=c_s_func(z_s=z_s, k_p=k_p, I_v=N(calculator.I_v(z_s),3), B=B, R=R)
+# st.latex(latex(c_s2))
+# c_s=N(c_s2.doit(),2)
+# st.latex(latex(c_s))
+# 
+# 
+# 
+# 
+# st.markdown(f"""(6.2) NOTE 2 The dynamic factor $c_d$ takes into account the increasing effect from vibrations due to turbulence
+# in resonance with the structure and may be obtained from Expression (6.3):""")
+# 
+# c_d1=c_d_func()
+# st.latex(latex(c_d1))
+# c_d2=c_d_func(z_s=z_s, k_p=k_p, I_v=N(calculator.I_v(z_s),3), B=B, R=R)
+# st.latex(latex(c_d2))
+# c_d=N(c_d2.doit(),2)
+# st.latex(latex(c_d))
+# 
+# st.markdown(f"""
+# (1) The detailed procedure for calculating the structural factor $c_sc_d$ is given in Expression (6.1). This procedure can only be used if the conditions given in 6.3.1 (2) apply.
+# """)
+# c_sd1=c_sd_func()
+# st.latex(latex(c_sd1))
+# c_sd2=c_sd_func(z_s=z_s, k_p=k_p, I_v=N(calculator.I_v(z_s),3), B=B, R=R)
+# st.latex(latex(c_sd2))
+# c_sd=N(c_sd2.doit(),2)
+# st.latex(latex(c_sd))
+# 
+# st.markdown(f"""
+# (6.1) where:
+# 	
+# $z_s$ is the reference height for determining the structural factor, see Figure 6.1. For structures where Figure 6.1 does not apply $z_s$ may be set equal to $h$, the height of the structure.
+# 
+# $k_p$ is the peak factor defined as the ratio of the maximum value of the fluctuating part of the response to its standard deviation
+# 
+# $I_v$ is the turbulence intensity defined in 4.4
+# 
+# $B_2$ is the background factor, allowing for the lack of full correlation of the pressure on the structure surface
+# 
+# $R_2$ is the resonance response factor, allowing for turbulence in resonance with the vibration mode
+# """)
+# =============================================================================

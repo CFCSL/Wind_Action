@@ -74,17 +74,13 @@ def v_b_func(**kwargs):
 	_eq=_eq.subs(kwargs)
 	return _eq
 	
-	
-
 
 # The 10 minutes mean wind velocity having prob p
 #c_prob = ((1 - K * np.log(-np.log(1 - p))) / (1 - K * np.log(-np.log(0.98))) )** n
 
 
-
 def c_prob_func(**kwargs):
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
-
 
 	expr=((1 - Mul(K , log(-log(1 - p)),evaluate=False))/ (1 - Mul(K , log(-log(0.98,evaluate=False),evaluate=False),evaluate=False))) **n
 	_eq=Eq(c_prob,expr)
@@ -109,8 +105,6 @@ def q_b_func(**kwargs):
 	_eq=Eq(q_b,expr)
 	_eq=_eq.subs(kwargs)
 	return _eq
-
-
 
 
 
@@ -152,8 +146,8 @@ def I_v_func(**kwargs):
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 
 	condlist = [And(z >= z_min,z <= z_max), z <= z_min]
-	funclist = [sigma_v / v_m,  sigma_v / v_m.subs(z, z_min)]
-	#funclist = [k_I/(c_0*log(z/z_0)),k_I/(c_0*log(z_min/z_0)) ]
+	#funclist = [sigma_v / v_m, sigma_v / v_m.subs(z, z_min)]
+	funclist = [k_I/(c_0*log(z/z_0)),k_I/(c_0*log(z_min/z_0)) ]
 	expr = Piecewise(*zip(funclist, condlist))
 	_eq=Eq(I_v,expr)
 	_eq=_eq.subs(kwargs)
@@ -168,121 +162,106 @@ def c_e_func(**kwargs):
 
 
 #%%
+
+
+
+def c_ez(z,**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+
+# Basic velocity pressure given in Expression (4.10):
+
+	def v_b():
+		exp=c_dir * c_season * v_b0
+		return exp
+
+
+	def c_prob():
+		exp = ((1 - K * np.log(-np.log(1 - p))) / (1 - K * np.log(-np.log(0.98))) )** n
+		
+		return exp
+
+	def k_r():
+
+		exp = 0.19 * (z_0 / z_0II) ** 0.07
+		return exp
+
+	def q_b():
+
+		exp= 0.5 * rho * v_b() ** 2  # Fixed operator and added 0.5
+		return exp
+
+	def sigma_v():
+
+		exp = k_r() * v_b() * k_I
+		return exp
+
+	def c_r(z):
+		condlist = [np.logical_and(z >= z_min, z <= z_max), z <= z_min]
+		funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
+		exp = np.piecewise(z, condlist, funclist)
+		return exp
+
+	def v_m(z):
+		exp = c_r(z) * c_0 * v_b()
+		return exp
+
+	def I_v(z):
+		condlist = [np.logical_and(z >= z_min, z <= z_max), z <= z_min]
+		funclist = [sigma_v() / v_m(z), sigma_v() / v_m(z_min)]
+		exp = np.piecewise(z, condlist, funclist)
+		return exp
+
+	def q_p(z):
+
+		exp = (1 + 7 * I_v(z)) * 0.5 * rho * v_m(z) ** 2  # Fixed operator and added 0.5
+		return exp
+
+	val = q_p(z) / q_b()
+	return val
+
+
+
+
 # =============================================================================
+# # Generate 1000 points linearly spaced between 0 and 100
+# z_values = np.linspace(0, 100, 1000)
 # 
+# # Calculate c_e for each value of z
+# c_e_values = [c_ez(z) for z in z_values]
 # 
-# # Define values
-# c_dir = 1.0
-# c_season = 1.0
-# v_b0 = 27.0  # km/h
-# p = 0.01
-# K = 0.2
-# n = 0.5
-# rho = 1.25
-# z_max = 200.0  # m
-# z_0 = 0.003  # m
-# z_min = 1.0  # m
-# z_0II = 0.005  # m
-# k_I = 1.00
-# A_ref = 800.0  # m2
-# c_d = 1.00
-# c_f = 1.55
-# c_0 = 1.00
-# def c_ez(z,c_dir=c_dir,c_season=c_season,v_b0=v_b0,p=p,K=K,n=n,rho=rho,z_max=z_max,z_0=z_0,z_min=z_min,z_0II=z_0II, k_I=k_I, A_ref=A_ref, c_d=c_d, c_f=c_f,c_0=c_0):
-# 	
+# # Plotting the results
+# plt.plot(c_e_values,z_values, color="r")
+# plt.xlabel('c_z')
+# plt.ylabel('z')
+# plt.title('Plot of c_e vs z')
+# plt.grid(True)  # Add a grid for better readability
+# plt.show()
 # 
-# # Basic velocity pressure given in Expression (4.10):
-# 
-# 	def v_b():
-# 		exp=c_dir * c_season * v_b0
-# 		return exp
-# 
-# 
-# 	def c_prob():
-# 		exp = ((1 - K * np.log(-np.log(1 - p))) / (1 - K * np.log(-np.log(0.98))) )** n
-# 		
-# 		return exp
-# 
-# 	def k_r():
-# 
-# 		exp = 0.19 * (z_0 / z_0II) ** 0.07
-# 		return exp
-# 
-# 	def q_b():
-# 
-# 		exp= 0.5 * rho * v_b() ** 2  # Fixed operator and added 0.5
-# 		return exp
-# 
-# 	def sigma_v():
-# 
-# 		exp = k_r() * v_b() * k_I
-# 		return exp
-# 
-# 	def c_r(z):
-# 		condlist = [np.logical_and(z >= z_min, z <= z_max), z <= z_min]
-# 		funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
-# 		exp = np.piecewise(z, condlist, funclist)
-# 		return exp
-# 
-# 
-# 	def v_m(z):
-# 		exp = c_r(z) * c_0 * v_b()
-# 		return exp
-# 
-# 	def I_v(z):
-# 		condlist = [np.logical_and(z >= z_min, z <= z_max), z <= z_min]
-# 		funclist = [sigma_v() / v_m(z), sigma_v() / v_m(z_min)]
-# 		exp = np.piecewise(z, condlist, funclist)
-# 		return exp
-# 
-# 	def q_p(z):
-# 
-# 		exp = (1 + 7 * I_v(z)) * 0.5 * rho * v_m(z) ** 2  # Fixed operator and added 0.5
-# 		return exp
-# 
-# 	val = q_p(z) / q_b()
-# 	return val
-# 
-# 
-# 
-# 
-# # =============================================================================
-# # # Generate 1000 points linearly spaced between 0 and 100
-# # z_values = np.linspace(0, 100, 1000)
-# # 
-# # # Calculate c_e for each value of z
-# # c_e_values = [c_ez(z) for z in z_values]
-# # 
-# # # Plotting the results
-# # plt.plot(c_e_values,z_values, color="r")
-# # plt.xlabel('c_z')
-# # plt.ylabel('z')
-# # plt.title('Plot of c_e vs z')
-# # plt.grid(True)  # Add a grid for better readability
-# # plt.show()
-# # 
-# # =============================================================================
-# #%%
+# =============================================================================
+#%%
+# =============================================================================
 # class Calculator:
-# # =============================================================================
-# # 	def __init__(self, c_dir, c_season, v_b0, p, K, n, rho, z_max, z_0, z_min, z_0II, k_I, A_ref, c_d, c_f, c_0):
-# # 		self.c_dir = c_dir
-# # 		self.c_season = c_season
-# # 		self.v_b0 = v_b0
-# # 		self.p = p
-# # 		self.K = K
-# # 		self.n = n
-# # 		self.rho = rho
-# # 		self.z_max = z_max
-# # 		self.z_0 = z_0
-# # 		self.z_min = z_min
-# # 		self.z_0II = z_0II
-# # 		self.k_I = k_I
-# # 		self.A_ref = A_ref
-# # 		self.c_d = c_d
-# # 		self.c_f = c_f
-# # 		self.c_0 = c_0
-# # =============================================================================
+# =============================================================================
+# =============================================================================
+# 	def __init__(self, c_dir, c_season, v_b0, p, K, n, rho, z_max, z_0, z_min, z_0II, k_I, A_ref, c_d, c_f, c_0):
+# 		self.c_dir = c_dir
+# 		self.c_season = c_season
+# 		self.v_b0 = v_b0
+# 		self.p = p
+# 		self.K = K
+# 		self.n = n
+# 		self.rho = rho
+# 		self.z_max = z_max
+# 		self.z_0 = z_0
+# 		self.z_min = z_min
+# 		self.z_0II = z_0II
+# 		self.k_I = k_I
+# 		self.A_ref = A_ref
+# 		self.c_d = c_d
+# 		self.c_f = c_f
+# 		self.c_0 = c_0
+# =============================================================================
+# =============================================================================
 # 		
 # 	def __init__(self,**params):
 # 		self.c_dir, self.c_season, self.v_b0, self.p, self.K, self.n, self.rho, \
@@ -355,83 +334,83 @@ def c_e_func(**kwargs):
 # 		exp=c_fr*q_p(z)*A_fr
 # 		return exp
 # 
-# #%%
-# z_e, c_pe = symbols('z_e c_pe')
-# W_e= symbols('W_e', cls=Function)(z_e)
-# def W_e_func(z_e=z_e,q_p=q_p, c_pe=c_pe):
-# 	z_e=UnevaluatedExpr(z_e)
-# 	q_p=UnevaluatedExpr(q_p)
-# 	c_pe=UnevaluatedExpr(c_pe)
-# 
-# 	exp= q_p.subs(z,z_e)*c_pe
-# 	return Eq(W_e, exp, evaluate =False)
-# 
-# 
-# z_i, c_p_i = symbols('z_i c_p_i')
-# W_i= symbols('W_i', cls=Function)(z_i)
-# def W_i_func(z_i=z_i,q_p=q_p, c_p_i=c_p_i):
-# 	z_i=UnevaluatedExpr(z_i)
-# 	q_p=UnevaluatedExpr(q_p)
-# 	c_p_i=UnevaluatedExpr(c_p_i)
-# 
-# 	exp= q_p.subs(z,z_i)*c_p_i
-# 	return Eq(W_i, exp, evaluate =False)
-# 
-# c_d, c_s,c_f, A_ref = symbols('c_d c_s c_f A_ref')
-# F_w=symbols('F_w', cls=Function)(z_e) 
-# def F_w_func(z_e=z_e,c_s=c_s, c_d=c_d,c_f=c_f,q_p=q_p,A_ref=A_ref):
-# 	z_e=UnevaluatedExpr(z_e)
-# 	c_s=UnevaluatedExpr(c_s)
-# 	c_d=UnevaluatedExpr(c_d)
-# 	c_f=UnevaluatedExpr(c_f)
-# 	q_p=UnevaluatedExpr(q_p)
-# 	A_ref=UnevaluatedExpr(A_ref)
-# 	exp=c_s*c_d*c_f*q_p.subs(z,z_e)*A_ref
-# 	return Eq(F_w, exp, evaluate =False)
-# 
-# A_fr, c_fr=symbols('A_fr c_fr')
-# F_fr=symbols('F_fr', cls=Function)(z_e) 
-# 
-# def F_fr_func(z_e=z_e,c_fr=c_fr,q_p=q_p,A_fr=A_fr):
-# 	z_e=UnevaluatedExpr(z_e)
-# 	c_fr=UnevaluatedExpr(c_fr)
-# 	A_fr=UnevaluatedExpr(A_fr)
-# 	exp=c_fr*q_p.subs(z,z_e)*A_fr
-# 	return Eq(F_fr, exp, evaluate =False)
-# 
-# c_s, z_s, B, R, k_p=symbols('c_s z_s B R k_p')
-# def c_s_func(z_s=z_s, k_p=k_p, I_v=I_v, B=B, R=R):
-# 	z_s=UnevaluatedExpr(z_s)
-# 	k_p=UnevaluatedExpr(k_p)
-# 	I_v=UnevaluatedExpr(I_v)
-# 	B=UnevaluatedExpr(B)
-# 	R=UnevaluatedExpr(R)
-# 	
-# 	exp = (1 + 7 * I_v.subs(z, z_s)  * sqrt(B**2))/(1+7*I_v.subs(z, z_s))
-# 	return Eq(c_s, exp, evaluate=False)
-# 
-# 	
-# c_d=symbols('c_d ')
-# def c_d_func(z_s=z_s, k_p=k_p, I_v=I_v, B=B, R=R):
-# 	z_s=UnevaluatedExpr(z_s)
-# 	k_p=UnevaluatedExpr(k_p)
-# 	I_v=UnevaluatedExpr(I_v)
-# 	B=UnevaluatedExpr(B)
-# 	R=UnevaluatedExpr(R)
-# 	
-# 	exp = (1 + 2 *k_p* I_v.subs(z, z_s)*sqrt(B**2+R**2))/(1+7*I_v.subs(z, z_s)*sqrt(B**2))
-# 	return Eq(c_d, exp, evaluate=False)
-# 
-# c_sd=symbols('c_sd ')
-# def c_sd_func(z_s=z_s, k_p=k_p, I_v=I_v, B=B, R=R):
-# 	z_s=UnevaluatedExpr(z_s)
-# 	k_p=UnevaluatedExpr(k_p)
-# 	I_v=UnevaluatedExpr(I_v)
-# 	B=UnevaluatedExpr(B)
-# 	R=UnevaluatedExpr(R)
-# 	
-# 	exp = (1 + 2 *k_p* I_v.subs(z, z_s)*sqrt(B**2+R**2))/(1+7*I_v.subs(z, z_s))
-# 	return Eq(c_sd, exp, evaluate=False)
-# 
-# 
 # =============================================================================
+#%%
+z_e, c_pe = symbols('z_e c_pe')
+W_e= symbols('W_e', cls=Function)(z_e)
+def W_e_func(z_e=z_e,q_p=q_p, c_pe=c_pe):
+	z_e=UnevaluatedExpr(z_e)
+	q_p=UnevaluatedExpr(q_p)
+	c_pe=UnevaluatedExpr(c_pe)
+
+	exp= q_p.subs(z,z_e)*c_pe
+	return Eq(W_e, exp, evaluate =False)
+
+
+z_i, c_p_i = symbols('z_i c_p_i')
+W_i= symbols('W_i', cls=Function)(z_i)
+def W_i_func(z_i=z_i,q_p=q_p, c_p_i=c_p_i):
+	z_i=UnevaluatedExpr(z_i)
+	q_p=UnevaluatedExpr(q_p)
+	c_p_i=UnevaluatedExpr(c_p_i)
+
+	exp= q_p.subs(z,z_i)*c_p_i
+	return Eq(W_i, exp, evaluate =False)
+
+c_d, c_s,c_f, A_ref = symbols('c_d c_s c_f A_ref')
+F_w=symbols('F_w', cls=Function)(z_e) 
+def F_w_func(z_e=z_e,c_s=c_s, c_d=c_d,c_f=c_f,q_p=q_p,A_ref=A_ref):
+	z_e=UnevaluatedExpr(z_e)
+	c_s=UnevaluatedExpr(c_s)
+	c_d=UnevaluatedExpr(c_d)
+	c_f=UnevaluatedExpr(c_f)
+	q_p=UnevaluatedExpr(q_p)
+	A_ref=UnevaluatedExpr(A_ref)
+	exp=c_s*c_d*c_f*q_p.subs(z,z_e)*A_ref
+	return Eq(F_w, exp, evaluate =False)
+
+A_fr, c_fr=symbols('A_fr c_fr')
+F_fr=symbols('F_fr', cls=Function)(z_e) 
+
+def F_fr_func(z_e=z_e,c_fr=c_fr,q_p=q_p,A_fr=A_fr):
+	z_e=UnevaluatedExpr(z_e)
+	c_fr=UnevaluatedExpr(c_fr)
+	A_fr=UnevaluatedExpr(A_fr)
+	exp=c_fr*q_p.subs(z,z_e)*A_fr
+	return Eq(F_fr, exp, evaluate =False)
+
+c_s, z_s, B, R, k_p=symbols('c_s z_s B R k_p')
+def c_s_func(z_s=z_s, k_p=k_p, I_v=I_v, B=B, R=R):
+	z_s=UnevaluatedExpr(z_s)
+	k_p=UnevaluatedExpr(k_p)
+	I_v=UnevaluatedExpr(I_v)
+	B=UnevaluatedExpr(B)
+	R=UnevaluatedExpr(R)
+	
+	exp = (1 + 7 * I_v.subs(z, z_s)  * sqrt(B**2))/(1+7*I_v.subs(z, z_s))
+	return Eq(c_s, exp, evaluate=False)
+
+	
+c_d=symbols('c_d ')
+def c_d_func(z_s=z_s, k_p=k_p, I_v=I_v, B=B, R=R):
+	z_s=UnevaluatedExpr(z_s)
+	k_p=UnevaluatedExpr(k_p)
+	I_v=UnevaluatedExpr(I_v)
+	B=UnevaluatedExpr(B)
+	R=UnevaluatedExpr(R)
+	
+	exp = (1 + 2 *k_p* I_v.subs(z, z_s)*sqrt(B**2+R**2))/(1+7*I_v.subs(z, z_s)*sqrt(B**2))
+	return Eq(c_d, exp, evaluate=False)
+
+c_sd=symbols('c_sd ')
+def c_sd_func(z_s=z_s, k_p=k_p, I_v=I_v, B=B, R=R):
+	z_s=UnevaluatedExpr(z_s)
+	k_p=UnevaluatedExpr(k_p)
+	I_v=UnevaluatedExpr(I_v)
+	B=UnevaluatedExpr(B)
+	R=UnevaluatedExpr(R)
+	
+	exp = (1 + 2 *k_p* I_v.subs(z, z_s)*sqrt(B**2+R**2))/(1+7*I_v.subs(z, z_s))
+	return Eq(c_sd, exp, evaluate=False)
+
+
