@@ -144,7 +144,7 @@ db['v_m']=v_m.rhs
 
 
 
-#st.write(db)
+st.write(db)
 st.markdown(f"""
 
 where: 
@@ -349,7 +349,7 @@ q_b=N(q_b2.doit(),3)
 st.latex(latex(q_b)+f'(kg/m^2)')
 
 db['q_b']=q_b.rhs
-#st.write(db)
+st.write(db)
 # Generate N points linearly spaced between 0 and 100
 N=1000
 z_values = np.linspace(0, 100, N)
