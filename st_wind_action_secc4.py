@@ -13,6 +13,10 @@ import matplotlib.pyplot as plt
 init_printing()
 #st.set_option('browser.gatherUsageStats', False)
 
+terrain_types=["0","I","II","III", "IV"]
+terrain_type= st.sidebar.selectbox("Select the Terrain category", options=terrain_types)
+z_0_val= Terrain_Category(terrain_type)[0]
+z_min_val= Terrain_Category(terrain_type)[1]
 
 c_dir_val = st.sidebar.number_input('Direction coefficient $c_{dir}=$', value= 1.0, min_value=0.0, step=0.1, format="%.3f")#1.0
 c_season_val = st.sidebar.number_input('Season coeffition $c_{season} =$', value= 1.0, min_value=0.0, step=0.1, format="%.3f")#1.0
@@ -22,8 +26,9 @@ K_val = st.sidebar.number_input('K=', value= 0.2, min_value=0.0, step=0.01, form
 n_val = st.sidebar.number_input('n =', value= 0.5, min_value=0.0, step=0.01, format="%.3f")#0.5
 rho_val = st.sidebar.number_input('Density of  air $\\rho [kg/m^3] =$', value= 1.25, min_value=0.0, step=0.01, format="%.3f")
 z_max_val = st.sidebar.number_input('Maximum height $z_{max} [m]$ =', value= 200.0, min_value=10.0, step=1.0, format="%.3f")#200.0  # m
-z_0_val = st.sidebar.number_input('Base height $z_{0} [m]$ =', value= 0.3, min_value=0.0, step=0.001, format="%.3f")#0.003  # m
-z_min_val = st.sidebar.number_input('Minimum height $z_{min} [m]$ =', value= 1.0, min_value=0.0, step=0.10, format="%.3f")#1.0  # m
+
+#z_0_val = st.sidebar.number_input('Base height $z_{0} [m]$ =', value= 0.3, min_value=0.0, step=0.001, format="%.3f")#0.003  # m
+#z_min_val = st.sidebar.number_input('Minimum height $z_{min} [m]$ =', value= 1.0, min_value=0.0, step=0.10, format="%.3f")#1.0  # m
 z_0II_val = st.sidebar.number_input('$z_{0II} [m]$ =', value= 0.005, min_value=0.0, step=0.001, format="%.3f")#symbols('z_0II')#0.005  # m
 k_I_val = st.sidebar.number_input('$k_I=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")#1.00
 A_ref_val = st.sidebar.number_input('$A_{ref} [m^2]=$',value= 800.0, min_value=1.0, step=1., format="%.3f")#800  # m2
@@ -37,6 +42,8 @@ c_pe_val = st.sidebar.number_input('$c_{pe}=$',value= 2.00, min_value=0.0, step=
 c_pi_val = st.sidebar.number_input('$c_{pi}=$',value= 1.00, min_value=0.0, step=0.01, format="%.3f")
 c_fr_val = st.sidebar.number_input('$c_{fr}=$',value= 10.00, min_value=0.0, step=0.01, format="%.3f")
 A_fr_val = st.sidebar.number_input('$A_{fr}=$',value= 500.00, min_value=0.0, step=1.0, format="%.2f")
+
+
 
 
 db={'v_b0':v_b0_val,'c_season':c_season_val,'c_0':c_0_val,'c_dir':c_dir_val,'K':K_val,'n':n_val,'p':p_val,'z_0II':K_val,'z_max':z_max_val,
@@ -144,7 +151,7 @@ db['v_m']=v_m.rhs
 
 
 
-st.write(db)
+#st.write(db)
 st.markdown(f"""
 
 where: 
@@ -349,7 +356,7 @@ q_b=N(q_b2.doit(),3)
 st.latex(latex(q_b)+f'(kg/m^2)')
 
 db['q_b']=q_b.rhs
-st.write(db)
+#st.write(db)
 # Generate N points linearly spaced between 0 and 100
 N=1000
 z_values = np.linspace(0, 100, N)

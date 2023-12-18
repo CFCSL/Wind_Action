@@ -160,181 +160,31 @@ def c_e_func(**kwargs):
 	_eq=_eq.subs(kwargs)
 	return _eq
 
+def Terrain_Category(terrain_type):
 
-#%%
-
-
-
-def c_ez(z,**kwargs):
-	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
-
-# Basic velocity pressure given in Expression (4.10):
-
-	def v_b():
-		exp=c_dir * c_season * v_b0
-		return exp
-
-
-	def c_prob():
-		exp = ((1 - K * np.log(-np.log(1 - p))) / (1 - K * np.log(-np.log(0.98))) )** n
+	if terrain_type == "0":
+		z_0 = 0.003
+		z_min = 1
+	if terrain_type == "I":
+		z_0 = 0.01
+		z_min = 1
+	if terrain_type == "II":
+		z_0 = 0.05
+		z_min = 2
+	if terrain_type == "III":
+		z_0 = 0.03
+		z_min = 5
+	if terrain_type == "IV":
+		z_0 = 1.0
+		z_min = 10.0
 		
-		return exp
-
-	def k_r():
-
-		exp = 0.19 * (z_0 / z_0II) ** 0.07
-		return exp
-
-	def q_b():
-
-		exp= 0.5 * rho * v_b() ** 2  # Fixed operator and added 0.5
-		return exp
-
-	def sigma_v():
-
-		exp = k_r() * v_b() * k_I
-		return exp
-
-	def c_r(z):
-		condlist = [np.logical_and(z >= z_min, z <= z_max), z <= z_min]
-		funclist = [k_r() * np.log(z / z_0), k_r() * np.log(z_min / z_0)]
-		exp = np.piecewise(z, condlist, funclist)
-		return exp
-
-	def v_m(z):
-		exp = c_r(z) * c_0 * v_b()
-		return exp
-
-	def I_v(z):
-		condlist = [np.logical_and(z >= z_min, z <= z_max), z <= z_min]
-		funclist = [sigma_v() / v_m(z), sigma_v() / v_m(z_min)]
-		exp = np.piecewise(z, condlist, funclist)
-		return exp
-
-	def q_p(z):
-
-		exp = (1 + 7 * I_v(z)) * 0.5 * rho * v_m(z) ** 2  # Fixed operator and added 0.5
-		return exp
-
-	val = q_p(z) / q_b()
-	return val
+	return z_0, z_min
 
 
+	
+	
 
 
-# =============================================================================
-# # Generate 1000 points linearly spaced between 0 and 100
-# z_values = np.linspace(0, 100, 1000)
-# 
-# # Calculate c_e for each value of z
-# c_e_values = [c_ez(z) for z in z_values]
-# 
-# # Plotting the results
-# plt.plot(c_e_values,z_values, color="r")
-# plt.xlabel('c_z')
-# plt.ylabel('z')
-# plt.title('Plot of c_e vs z')
-# plt.grid(True)  # Add a grid for better readability
-# plt.show()
-# 
-# =============================================================================
-#%%
-# =============================================================================
-# class Calculator:
-# =============================================================================
-# =============================================================================
-# 	def __init__(self, c_dir, c_season, v_b0, p, K, n, rho, z_max, z_0, z_min, z_0II, k_I, A_ref, c_d, c_f, c_0):
-# 		self.c_dir = c_dir
-# 		self.c_season = c_season
-# 		self.v_b0 = v_b0
-# 		self.p = p
-# 		self.K = K
-# 		self.n = n
-# 		self.rho = rho
-# 		self.z_max = z_max
-# 		self.z_0 = z_0
-# 		self.z_min = z_min
-# 		self.z_0II = z_0II
-# 		self.k_I = k_I
-# 		self.A_ref = A_ref
-# 		self.c_d = c_d
-# 		self.c_f = c_f
-# 		self.c_0 = c_0
-# =============================================================================
-# =============================================================================
-# 		
-# 	def __init__(self,**params):
-# 		self.c_dir, self.c_season, self.v_b0, self.p, self.K, self.n, self.rho, \
-# 		self.z_max, self.z_0, self.z_min, self.z_0II, self.k_I, self.A_ref, \
-# 		self.c_d, self.c_f, self.c_0,self.c_pe,self.c_pi, self.c_fr, self.A_fr = params
-# 
-# 	def v_b(self):
-# 		exp = self.c_dir * self.c_season * self.v_b0
-# 		#exp=exp.subs(params)
-# 		return exp
-# 
-# 	def c_prob(self):
-# 		exp = ((1 - self.K * np.log(-np.log(1 - self.p))) / (1 - self.K * np.log(-np.log(0.98))))**self.n
-# 		return exp
-# 
-# 	def k_r(self):
-# 		exp = 0.19 * (self.z_0 / self.z_0II) ** 0.07
-# 		return exp
-# 
-# 	def q_b(self):
-# 		exp = 0.5 * self.rho * self.v_b()**2
-# 		return exp
-# 
-# 	def sigma_v(self):
-# 		exp = self.k_r() * self.v_b() * self.k_I
-# 		return exp
-# 
-# 	def c_r(self, z):
-# 		condlist = [np.logical_and(z >= self.z_min, z <= self.z_max), z <= self.z_min]
-# 		funclist = [self.k_r() * np.log(z / self.z_0), self.k_r() * np.log(self.z_min / self.z_0)]
-# 		if z != 0 and self.z_min != 0 and self.z_0 != 0:
-# 			funclist = [self.k_r() * np.log(z / self.z_0), self.k_r() * np.log(self.z_min / self.z_0)]
-# 		else:
-# 			pass
-# 		exp = np.piecewise(z, condlist, funclist)
-# 		return exp
-# 
-# 	def v_m(self, z):
-# 		exp = self.c_r(z) * self.c_0 * self.v_b()
-# 		return exp
-# 
-# 	def I_v(self, z):
-# 
-# 		condlist = [z >= self.z_min, z <= self.z_min]
-# 		funclist = [self.sigma_v() / self.v_m(z), self.sigma_v() / self.v_m(self.z_min)]
-# 		exp = Piecewise((funclist[0], condlist[0]), (funclist[1], condlist[1]))
-# 		return exp
-# 
-# 
-# 	def q_p(self, z):
-# 		exp = (1 + 7 * self.I_v(z)) * 0.5 * self.rho * self.v_m(z)**2
-# 		return exp
-# 
-# 	def c_ez(self, z):
-# 		val = self.q_p(z) / self.q_b()
-# 		return val
-# 	def W_e(self, z):
-# 		exp= q_p(z)*c_pe
-# 		return exp
-# 	
-# 	def W_i(self, z):
-# 		exp= q_p(z)*c_pi
-# 		return exp
-# 	
-# 	def F_w(self, z):
-# 		exp=c_s*c_d*c_f*q_p(z)*A_ref
-# 		return exp
-# 	
-# 	def F_fr(self, z):
-# 		exp=c_fr*q_p(z)*A_fr
-# 		return exp
-# 
-# =============================================================================
 #%%
 z_e, c_pe = symbols('z_e c_pe')
 W_e= symbols('W_e', cls=Function)(z_e)
