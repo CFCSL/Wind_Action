@@ -70,8 +70,8 @@ q_p=symbols('q_p', cls=Function)(z)
 def v_b_func(**kwargs):
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	expr=c_dir * c_season * v_b0
+	expr = expr.subs(kwargs)
 	_eq=Eq(v_b,expr)
-	_eq=_eq.subs(kwargs)
 	return _eq
 	
 
@@ -82,18 +82,19 @@ def v_b_func(**kwargs):
 def c_prob_func(**kwargs):
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 
-	expr=((1 - Mul(K , log(-log(1 - p)),evaluate=False))/ (1 - Mul(K , log(-log(0.98,evaluate=False),evaluate=False),evaluate=False))) **n
+	expr=((1 - Mul(K , log(-log(1 - p)),evaluate=False))/ (1 - Mul(K , log(-log(0.98,evaluate=False),evaluate=False),evaluate=False)))**n
+	expr = expr.subs(kwargs)
 	_eq=Eq(c_prob,expr)
-	_eq=_eq.subs(kwargs)
 	return _eq
 # Terrain factor depending on the roughness length z0
 
 
 def k_r_func(**kwargs):
+	kwargs.pop('k_r', None)
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	expr = 0.19 * (z_0 / z_0II) ** 0.07
+	expr = expr.subs(kwargs)
 	_eq=Eq(k_r,expr)
-	_eq=_eq.subs(kwargs)
 	return _eq
 
 # Basic velocity pressure
@@ -102,8 +103,8 @@ def k_r_func(**kwargs):
 def q_b_func(**kwargs):
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	expr= 0.5 * rho * v_b ** 2
+	expr = expr.subs(kwargs)
 	_eq=Eq(q_b,expr)
-	_eq=_eq.subs(kwargs)
 	return _eq
 
 
@@ -111,8 +112,8 @@ def q_b_func(**kwargs):
 def q_p_func(**kwargs):
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	expr=(1+7*I_v)*(1/2)*rho*v_m**2   # Fixed operator and added 0.5
+	expr = expr.subs(kwargs)
 	_eq=Eq(q_p,expr)
-	_eq=_eq.subs(kwargs)
 	return _eq
 
 # sigma_v
@@ -120,9 +121,8 @@ def sigma_v_func(**kwargs):
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 
 	expr = k_r * v_b * k_I
-
+	expr = expr.subs(kwargs)
 	_eq=Eq(sigma_v,expr)
-	_eq=_eq.subs(kwargs)
 	return _eq
 
 def c_r_func(z=z,**kwargs):
@@ -130,8 +130,8 @@ def c_r_func(z=z,**kwargs):
 	condlist = [And(z >= z_min,z <= z_max), z <= z_min]
 	funclist = [Mul(k_r, log(N(z / z_0,2), evaluate=False),evaluate=False), Mul(k_r, log(z_min / z_0, evaluate=False),evaluate=False)]
 	expr = Piecewise(*zip(funclist,condlist))
+	expr = expr.subs(kwargs)
 	_eq=Eq(c_r,expr)
-	_eq=_eq.subs(kwargs)
 	return _eq
 
 def v_m_func(z=z,**kwargs):
@@ -139,8 +139,8 @@ def v_m_func(z=z,**kwargs):
 
 	expr = c_r * c_0 * v_b
 	# Apply eval() to all keys
+	expr = expr.subs(kwargs)
 	_eq=Eq(v_m,expr)
-	_eq=_eq.subs(kwargs)
 	return _eq
 def I_v_func(**kwargs):
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
@@ -149,17 +149,19 @@ def I_v_func(**kwargs):
 	#funclist = [sigma_v / v_m, sigma_v / v_m.subs(z, z_min)]
 	funclist = [k_I/(c_0*log(z/z_0)),k_I/(c_0*log(z_min/z_0)) ]
 	expr = Piecewise(*zip(funclist, condlist))
+	expr = expr.subs(kwargs)
 	_eq=Eq(I_v,expr)
-	_eq=_eq.subs(kwargs)
 	return _eq
 
 def c_e_func(**kwargs):
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	expr = q_p / q_b
+	expr = expr.subs(kwargs)
 	_eq=Eq(c_e,expr)
-	_eq=_eq.subs(kwargs)
 	return _eq
 
+
+# Lets mke it a dict
 def Terrain_Category(terrain_type):
 
 	if terrain_type == "0":
