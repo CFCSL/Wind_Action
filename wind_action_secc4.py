@@ -274,6 +274,45 @@ def F_fr_func(**kwargs):
 	return _eq
 
 
+#Section 8 Wind actions on bridges
+
+c_fx0=symbols(' c_fx0')
+c_fx=symbols(' c_fx', cls=Function)
+
+
+#8.3.1 Force coefficients in x-direction (general method)
+
+def c_fx_func(**kwargs):# Force coefficients for wind actions on bridge decks in the x-direction
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+	exp=c_fx0
+	expr = expr.subs(kwargs)
+	_eq=Eq(c_fx,expr)
+	return _eq
+
+#8.3.2 Force in x-direction ñ Simplified Method
+
+C, A_refx= symbols('C A_refx')
+F_W=symbols('F_W', cls=Function)
+
+
+def F_w_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+	exp=1/2*rho*v_b**2*C* A_refx
+	expr = expr.subs(kwargs)
+	_eq=Eq(F_W,expr)
+	return _eq
+
+#8.3.3 Wind forces on bridge decks in z-direction
+
+A_refz=symbols(' A_refz', cls=Function)
+b, L=symbols('b L')
+
+def A_refz_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+	exp=b*L
+	expr = expr.subs(kwargs)
+	_eq=Eq(A_refz,expr)
+	return _eq
 
 
 
