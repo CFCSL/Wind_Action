@@ -11,7 +11,12 @@ import streamlit as st
 from wind_action_secc4 import *
 import matplotlib.pyplot as plt
 init_printing()
-#st.set_option('browser.gatherUsageStats', False)
+
+
+
+
+
+
 
 terrain_types=["0","I","II","III", "IV"]
 terrain_type= st.sidebar.selectbox("Select the Terrain category", options=terrain_types)

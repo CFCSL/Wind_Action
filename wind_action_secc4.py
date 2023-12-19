@@ -13,6 +13,11 @@ from sympy import N
 init_printing()
 import matplotlib.pyplot as plt
 
+
+# Section 4 Wind velocity and velocity presure
+
+
+## Fubntions to show decimals
 def round_expr(expr, num_digits=3):
 	return expr.xreplace({n : round(n, num_digits) for n in expr.atoms(Number)})
 
@@ -22,6 +27,8 @@ def round_equation(eq, num_digits=3):
 	rounded_rhs = round_expr(rhs, num_digits)
 	return Eq(lhs, rounded_rhs)
 
+
+# Symbolics
 						 
 ue=UnevaluatedExpr
 
@@ -64,29 +71,47 @@ q_p=symbols('q_p', cls=Function)(z)
 
 
 
-# Basic velocity pressure given in Expression (4.10):
-#v_b = c_dir * c_season * v_b0
-#def v_b_func(c_dir=c_dir, c_season=c_season, v_b0=v_b0):
-def v_b_func(**kwargs):
+# 4.2 Basic values
+
+
+
+def v_b_func(**kwargs):   #The basic wind velocity shall be calculated from Expression (4.1).
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	expr=c_dir * c_season * v_b0
 	expr = expr.subs(kwargs)
 	_eq=Eq(v_b,expr)
 	return _eq
-	
-
-# The 10 minutes mean wind velocity having prob p
-#c_prob = ((1 - K * np.log(-np.log(1 - p))) / (1 - K * np.log(-np.log(0.98))) )** n
 
 
-def c_prob_func(**kwargs):
+def c_prob_func(**kwargs): # The 10 minutes mean wind velocity having prob p
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 
 	expr=((1 - Mul(K , log(-log(1 - p)),evaluate=False))/ (1 - Mul(K , log(-log(0.98,evaluate=False),evaluate=False),evaluate=False)))**n
 	expr = expr.subs(kwargs)
 	_eq=Eq(c_prob,expr)
 	return _eq
-# Terrain factor depending on the roughness length z0
+
+# 4.3 Mean wind
+#4.3.1 Variation with height
+
+def v_m_func(z=z,**kwargs): # The mean wind velocity vm(z) at a height z 
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+	expr = c_r * c_0 * v_b
+	# Apply eval() to all keys
+	expr = expr.subs(kwargs)
+	_eq=Eq(v_m,expr)
+	return _eq
+
+#4.3.2 Terrain roughness
+
+def c_r_func(z=z,**kwargs): #The roughness factor, cr(z)
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+	condlist = [And(z >= z_min,z <= z_max), z <= z_min]
+	funclist = [Mul(k_r, log(N(z / z_0,2), evaluate=False),evaluate=False), Mul(k_r, log(z_min / z_0, evaluate=False),evaluate=False)]
+	expr = Piecewise(*zip(funclist,condlist))
+	expr = expr.subs(kwargs)
+	_eq=Eq(c_r,expr)
+	return _eq
 
 
 def k_r_func(**kwargs):
@@ -97,71 +122,7 @@ def k_r_func(**kwargs):
 	_eq=Eq(k_r,expr)
 	return _eq
 
-# Basic velocity pressure
-
-
-def q_b_func(**kwargs):
-	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
-	expr= 0.5 * rho * v_b ** 2
-	expr = expr.subs(kwargs)
-	_eq=Eq(q_b,expr)
-	return _eq
-
-
-
-def q_p_func(**kwargs):
-	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
-	expr=(1+7*I_v)*(1/2)*rho*v_m**2   # Fixed operator and added 0.5
-	expr = expr.subs(kwargs)
-	_eq=Eq(q_p,expr)
-	return _eq
-
-# sigma_v
-def sigma_v_func(**kwargs):
-	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
-
-	expr = k_r * v_b * k_I
-	expr = expr.subs(kwargs)
-	_eq=Eq(sigma_v,expr)
-	return _eq
-
-def c_r_func(z=z,**kwargs):
-	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
-	condlist = [And(z >= z_min,z <= z_max), z <= z_min]
-	funclist = [Mul(k_r, log(N(z / z_0,2), evaluate=False),evaluate=False), Mul(k_r, log(z_min / z_0, evaluate=False),evaluate=False)]
-	expr = Piecewise(*zip(funclist,condlist))
-	expr = expr.subs(kwargs)
-	_eq=Eq(c_r,expr)
-	return _eq
-
-def v_m_func(z=z,**kwargs):
-	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
-
-	expr = c_r * c_0 * v_b
-	# Apply eval() to all keys
-	expr = expr.subs(kwargs)
-	_eq=Eq(v_m,expr)
-	return _eq
-def I_v_func(**kwargs):
-	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
-
-	condlist = [And(z >= z_min,z <= z_max), z <= z_min]
-	#funclist = [sigma_v / v_m, sigma_v / v_m.subs(z, z_min)]
-	funclist = [k_I/(c_0*log(z/z_0)),k_I/(c_0*log(z_min/z_0)) ]
-	expr = Piecewise(*zip(funclist, condlist))
-	expr = expr.subs(kwargs)
-	_eq=Eq(I_v,expr)
-	return _eq
-
-def c_e_func(**kwargs):
-	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
-	expr = q_p / q_b
-	expr = expr.subs(kwargs)
-	_eq=Eq(c_e,expr)
-	return _eq
-
-
-# Lets mke it a dict
+# Table 4.1  Terrain categories and terrain parameters
 def Terrain_Category(terrain_type):
 
 	if terrain_type == "0":
@@ -183,15 +144,63 @@ def Terrain_Category(terrain_type):
 	return z_0, z_min
 
 
-	
-	
+#4.4 Wind turbulence
+
+def sigma_v_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+	expr = k_r * v_b * k_I
+	expr = expr.subs(kwargs)
+	_eq=Eq(sigma_v,expr)
+	return _eq
+
+def I_v_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+
+	condlist = [And(z >= z_min,z <= z_max), z <= z_min]
+	#funclist = [sigma_v / v_m, sigma_v / v_m.subs(z, z_min)]
+	funclist = [k_I/(c_0*log(z/z_0)),k_I/(c_0*log(z_min/z_0)) ]
+	expr = Piecewise(*zip(funclist, condlist))
+	expr = expr.subs(kwargs)
+	_eq=Eq(I_v,expr)
+	return _eq
+
+
+#4.5 Peak velocity pressure
+
+
+def q_b_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+	expr= 0.5 * rho * v_b ** 2
+	expr = expr.subs(kwargs)
+	_eq=Eq(q_b,expr)
+	return _eq
+
+
+def q_p_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+	expr=(1+7*I_v)*(1/2)*rho*v_m**2   # Fixed operator and added 0.5
+	expr = expr.subs(kwargs)
+	_eq=Eq(q_p,expr)
+	return _eq
+
+
+def c_e_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+	expr = q_p / q_b
+	expr = expr.subs(kwargs)
+	_eq=Eq(c_e,expr)
+	return _eq
 
 
 #%%
+#Section 5 Wind actions
+
+#5.2 Wind pressure on surfaces
+
 z_e, c_pe = symbols('z_e c_pe')
 W_e= symbols('W_e', cls=Function)(z_e)
 
-def W_e_func(**kwargs):
+def W_e_func(**kwargs): # The wind pressure acting on the external surfaces, we 
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	exp= q_p.subs(z,z_e)*c_pe
 	expr = expr.subs(kwargs)
@@ -202,26 +211,60 @@ def W_e_func(**kwargs):
 z_i, c_p_i = symbols('z_i c_p_i')
 W_i= symbols('W_i', cls=Function)(z_i)
 
-def W_i_func(**kwargs):
+def W_i_func(**kwargs): #  The wind pressure acting on the internal surfaces
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	exp= q_p.subs(z,z_i)*c_p_i
 	expr = expr.subs(kwargs)
 	_eq=Eq(W_e,expr)
 	return _eq
 
+#5.3 Wind forces
 
 c_d, c_s,c_f, A_ref = symbols('c_d c_s c_f A_ref')
 F_w=symbols('F_w', cls=Function)(z_e) 
 
-def F_w_func(**kwargs):
+def F_w_func(**kwargs):#The wind forces for the whole structure
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	exp=c_s*c_d*c_f*q_p.subs(z,z_e)*A_ref
 	expr = expr.subs(kwargs)
 	_eq=Eq(F_w,expr)
 	return _eq
 	
+
+
+#%%
+# Section 6 Structural factor cscd
+
+#6.3 Detailed procedure 
+#6.3.1 Structural factor cscd
+
 A_fr, c_fr=symbols('A_fr c_fr')
+c_sd=symbols('c_sd ')
+c_s, z_s, B, R, k_p=symbols('c_s z_s B R k_p')
+c_d=symbols('c_d ')
 F_fr=symbols('F_fr', cls=Function)(z_e) 
+
+
+def c_sd_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+	exp = (1 + 2 *k_p* I_v.subs(z, z_s)*sqrt(B**2+R**2))/(1+7*I_v.subs(z, z_s))
+	expr = expr.subs(kwargs)
+	_eq=Eq(c_sd,expr)
+	return _eq
+def c_s_func(**kwargs): #The size factor cs 
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+	exp = (1 + 7 * I_v.subs(z, z_s)  * sqrt(B**2))/(1+7*I_v.subs(z, z_s))
+	expr = expr.subs(kwargs)
+	_eq=Eq(c_s,expr)
+	return _eq
+	
+
+def c_d_func(**kwargs): #The dynamic factor cd
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+	exp = (1 + 2 *k_p* I_v.subs(z, z_s)*sqrt(B**2+R**2))/(1+7*I_v.subs(z, z_s)*sqrt(B**2))
+	expr = expr.subs(kwargs)
+	_eq=Eq(c_d,expr)
+	return _eq
 
 def F_fr_func(**kwargs):
 	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
@@ -230,28 +273,9 @@ def F_fr_func(**kwargs):
 	_eq=Eq(F_fr,expr)
 	return _eq
 
-c_s, z_s, B, R, k_p=symbols('c_s z_s B R k_p')
-def c_s_func(**kwargs):
-	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
-	exp = (1 + 7 * I_v.subs(z, z_s)  * sqrt(B**2))/(1+7*I_v.subs(z, z_s))
-	expr = expr.subs(kwargs)
-	_eq=Eq(c_s,expr)
-	return _eq
-	
-c_d=symbols('c_d ')
-def c_d_func(**kwargs):
-	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
-	exp = (1 + 2 *k_p* I_v.subs(z, z_s)*sqrt(B**2+R**2))/(1+7*I_v.subs(z, z_s)*sqrt(B**2))
-	expr = expr.subs(kwargs)
-	_eq=Eq(c_d,expr)
-	return _eq
 
-c_sd=symbols('c_sd ')
-def c_sd_func(**kwargs):
-	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
-	exp = (1 + 2 *k_p* I_v.subs(z, z_s)*sqrt(B**2+R**2))/(1+7*I_v.subs(z, z_s))
-	expr = expr.subs(kwargs)
-	_eq=Eq(c_sd,expr)
-	return _eq
+
+
+
 
 
