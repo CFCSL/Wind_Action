@@ -190,79 +190,68 @@ def Terrain_Category(terrain_type):
 #%%
 z_e, c_pe = symbols('z_e c_pe')
 W_e= symbols('W_e', cls=Function)(z_e)
-def W_e_func(z_e=z_e,q_p=q_p, c_pe=c_pe):
-	z_e=UnevaluatedExpr(z_e)
-	q_p=UnevaluatedExpr(q_p)
-	c_pe=UnevaluatedExpr(c_pe)
 
+def W_e_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	exp= q_p.subs(z,z_e)*c_pe
-	return Eq(W_e, exp, evaluate =False)
+	expr = expr.subs(kwargs)
+	_eq=Eq(W_e,expr)
+	return _eq
 
 
 z_i, c_p_i = symbols('z_i c_p_i')
 W_i= symbols('W_i', cls=Function)(z_i)
-def W_i_func(z_i=z_i,q_p=q_p, c_p_i=c_p_i):
-	z_i=UnevaluatedExpr(z_i)
-	q_p=UnevaluatedExpr(q_p)
-	c_p_i=UnevaluatedExpr(c_p_i)
 
+def W_i_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	exp= q_p.subs(z,z_i)*c_p_i
-	return Eq(W_i, exp, evaluate =False)
+	expr = expr.subs(kwargs)
+	_eq=Eq(W_e,expr)
+	return _eq
+
 
 c_d, c_s,c_f, A_ref = symbols('c_d c_s c_f A_ref')
 F_w=symbols('F_w', cls=Function)(z_e) 
-def F_w_func(z_e=z_e,c_s=c_s, c_d=c_d,c_f=c_f,q_p=q_p,A_ref=A_ref):
-	z_e=UnevaluatedExpr(z_e)
-	c_s=UnevaluatedExpr(c_s)
-	c_d=UnevaluatedExpr(c_d)
-	c_f=UnevaluatedExpr(c_f)
-	q_p=UnevaluatedExpr(q_p)
-	A_ref=UnevaluatedExpr(A_ref)
-	exp=c_s*c_d*c_f*q_p.subs(z,z_e)*A_ref
-	return Eq(F_w, exp, evaluate =False)
 
+def F_w_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
+	exp=c_s*c_d*c_f*q_p.subs(z,z_e)*A_ref
+	expr = expr.subs(kwargs)
+	_eq=Eq(F_w,expr)
+	return _eq
+	
 A_fr, c_fr=symbols('A_fr c_fr')
 F_fr=symbols('F_fr', cls=Function)(z_e) 
 
-def F_fr_func(z_e=z_e,c_fr=c_fr,q_p=q_p,A_fr=A_fr):
-	z_e=UnevaluatedExpr(z_e)
-	c_fr=UnevaluatedExpr(c_fr)
-	A_fr=UnevaluatedExpr(A_fr)
+def F_fr_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	exp=c_fr*q_p.subs(z,z_e)*A_fr
-	return Eq(F_fr, exp, evaluate =False)
+	expr = expr.subs(kwargs)
+	_eq=Eq(F_fr,expr)
+	return _eq
 
 c_s, z_s, B, R, k_p=symbols('c_s z_s B R k_p')
-def c_s_func(z_s=z_s, k_p=k_p, I_v=I_v, B=B, R=R):
-	z_s=UnevaluatedExpr(z_s)
-	k_p=UnevaluatedExpr(k_p)
-	I_v=UnevaluatedExpr(I_v)
-	B=UnevaluatedExpr(B)
-	R=UnevaluatedExpr(R)
-	
+def c_s_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	exp = (1 + 7 * I_v.subs(z, z_s)  * sqrt(B**2))/(1+7*I_v.subs(z, z_s))
-	return Eq(c_s, exp, evaluate=False)
-
+	expr = expr.subs(kwargs)
+	_eq=Eq(c_s,expr)
+	return _eq
 	
 c_d=symbols('c_d ')
-def c_d_func(z_s=z_s, k_p=k_p, I_v=I_v, B=B, R=R):
-	z_s=UnevaluatedExpr(z_s)
-	k_p=UnevaluatedExpr(k_p)
-	I_v=UnevaluatedExpr(I_v)
-	B=UnevaluatedExpr(B)
-	R=UnevaluatedExpr(R)
-	
+def c_d_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	exp = (1 + 2 *k_p* I_v.subs(z, z_s)*sqrt(B**2+R**2))/(1+7*I_v.subs(z, z_s)*sqrt(B**2))
-	return Eq(c_d, exp, evaluate=False)
+	expr = expr.subs(kwargs)
+	_eq=Eq(c_d,expr)
+	return _eq
 
 c_sd=symbols('c_sd ')
-def c_sd_func(z_s=z_s, k_p=k_p, I_v=I_v, B=B, R=R):
-	z_s=UnevaluatedExpr(z_s)
-	k_p=UnevaluatedExpr(k_p)
-	I_v=UnevaluatedExpr(I_v)
-	B=UnevaluatedExpr(B)
-	R=UnevaluatedExpr(R)
-	
+def c_sd_func(**kwargs):
+	kwargs = {eval(key): UnevaluatedExpr(value) for key, value in kwargs.items()}
 	exp = (1 + 2 *k_p* I_v.subs(z, z_s)*sqrt(B**2+R**2))/(1+7*I_v.subs(z, z_s))
-	return Eq(c_sd, exp, evaluate=False)
+	expr = expr.subs(kwargs)
+	_eq=Eq(c_sd,expr)
+	return _eq
 
 
